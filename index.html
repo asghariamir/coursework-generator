@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Coursework Generator — 30 Variants</title>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<style>
+:root{--ink:#111827;--muted:#6b7280;--primary:#2563eb;--bg:#f9fafb;--card:#fff;--border:#e5e7eb}
+*{box-sizing:border-box}
+html,body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+.container{max-width:1000px;margin:0 auto;padding:20px}
+.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:40px 20px;text-align:center;border-radius:12px;margin-bottom:30px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
+.header h1{margin:0 0 10px;font-size:36px;font-weight:700}
+.header p{margin:0;opacity:0.95;font-size:18px}
+.card{background:var(--card);border-radius:12px;padding:24px;margin-bottom:24px;box-shadow:0 4px 6px rgba(0,0,0,0.07)}
+.card h2{color:var(--primary);margin:0 0 20px;font-size:24px;display:flex;align-items:center;gap:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:20px 0}
+.input-group{display:flex;flex-direction:column;gap:6px}
+.input-group label{font-size:14px;font-weight:600;color:var(--ink)}
+.input-group .hint{font-size:12px;color:var(--muted);margin-top:4px}
+input,select{padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:15px;background:white;transition:border 0.2s}
+input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+.btn-group{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+button{padding:12px 24px;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s}
+.btn-primary{background:var(--primary);color:white}
+.btn-primary:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.2)}
+.btn-secondary{background:#e5e7eb;color:var(--ink)}
+.btn-secondary:hover{background:#d1d5db}
+.course-selector{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.course-btn{padding:16px;border:2px solid var(--border);border-radius:8px;background:white;cursor:pointer;transition:all 0.2s;text-align:left}
+.course-btn:hover{border-color:var(--primary);background:#f0f4ff}
+.course-btn.active{border-color:var(--primary);background:linear-gradient(to right,#f0f4ff,#e6efff);box-shadow:0 2px 8px rgba(37,99,235,0.1)}
+.course-btn h3{margin:0 0 4px;color:var(--primary);font-size:16px}
+.course-btn p{margin:0;font-size:13px;color:var(--muted)}
+.preview-box{background:#f8f9fa;border:1px solid var(--border);border-radius:8px;padding:20px;min-height:300px;max-height:600px;overflow-y:auto;font-family:'SF Mono','Monaco','Inconsolata','Fira Code',monospace;font-size:13px;line-height:1.6;white-space:pre-wrap}
+.info-box{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:16px;border-radius:8px;margin:20px 0}
+.info-box strong{display:block;margin-bottom:8px;font-size:16px}
+.footer{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+.status{padding:8px 12px;background:#e6efff;color:var(--primary);border-radius:6px;font-size:14px;margin:10px 0;display:inline-block}
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr}
+  .course-selector{grid-template-columns:1fr}
+  .header h1{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>📚 Coursework Generator</h1>
+    <p>30 Unique Variants per Coursework • Deterministic Assignment</p>
+  </div>
+
+  <div class="card">
+    <h2>ℹ️ How It Works</h2>
+    <div class="info-box">
+      <strong>🎲 Automatic Variant Assignment</strong>
+      Your variant is determined by your Student ID using: <code style="background:rgba(255,255,255,0.2);padding:2px 6px;border-radius:4px;">Variant = 1 + (last 6 digits % 30)</code>
+      <br>Example: ID 21111438943 → 438943 % 30 = 13 → Variant 14
+    </div>
+    
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:20px">
+      <div style="padding:12px;background:#f0f9ff;border-radius:8px;border-left:4px solid #0ea5e9">
+        <strong style="color:#0c4a6e">Q1-Q4</strong><br>
+        <span style="font-size:14px;color:#475569">15 marks each</span>
+      </div>
+      <div style="padding:12px;background:#fef3c7;border-radius:8px;border-left:4px solid #f59e0b">
+        <strong style="color:#78350f">Q5 Presentation</strong><br>
+        <span style="font-size:14px;color:#475569">40 marks total</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔧 Generate Your Assignment</h2>
+    
+    <div class="grid">
+      <div class="input-group">
+        <label for="student">Student Name</label>
+        <input id="student" type="text" placeholder="Optional - for PDF filename">
+      </div>
+      <div class="input-group">
+        <label for="sid">Student ID</label>
+        <input id="sid" type="text" placeholder="e.g., 21111438943">
+        <div class="hint">Enter to auto-assign your variant</div>
+      </div>
+    </div>
+
+    <div class="course-selector">
+      <div class="course-btn active" data-course="cf" onclick="selectCourse('cf',this)">
+        <h3>📈 Dynamical Systems</h3>
+        <p>Chaos & Fractals</p>
+      </div>
+      <div class="course-btn" data-course="nm" onclick="selectCourse('nm',this)">
+        <h3>🔢 Numerical Methods</h3>
+        <p>Algorithms & Analysis</p>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="input-group">
+        <label for="variant">Variant Number</label>
+        <select id="variant">
+          <option value="">Select variant...</option>
+        </select>
+        <div class="hint">Auto-fills from Student ID</div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" onclick="generatePreview()">
+        📄 Preview Assignment
+      </button>
+      <button class="btn-secondary" onclick="downloadPDF()">
+        ⬇️ Download PDF
+      </button>
+    </div>
+    
+    <div id="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>👁️ Preview</h2>
+    <div id="preview" class="preview-box">Your personalized assignment will appear here...</div>
+  </div>
+
+  <div class="footer">
+    <p>© 2025 Coursework Generator • All processing happens in your browser • No data is uploaded</p>
+    <p style="margin-top:10px">
+      <strong>Academic Integrity:</strong> Open-book allowed. You must state all tools/sources used.
+    </p>
+  </div>
+</div>
+
+<script>
+// Initialize
+let currentCourse = 'cf';
+const variantSelect = document.getElementById('variant');
+for(let i = 1; i <= 30; i++) {
+  const option = document.createElement('option');
+  option.value = i;
+  option.textContent = `Variant ${i}`;
+  variantSelect.appendChild(option);
+}
+
+// Auto-assign variant from Student ID
+document.getElementById('sid').addEventListener('input', function(e) {
+  const digits = e.target.value.replace(/\D/g, '');
+  if(digits.length >= 6) {
+    const last6 = parseInt(digits.slice(-6), 10);
+    const variant = 1 + (last6 % 30);
+    variantSelect.value = variant;
+    document.getElementById('status').innerHTML = `<div class="status">✓ Auto-assigned Variant ${variant}</div>`;
+  }
+});
+
+// Course selection
+function selectCourse(course, element) {
+  currentCourse = course;
+  document.querySelectorAll('.course-btn').forEach(btn => btn.classList.remove('active'));
+  element.classList.add('active');
+}
+
+// PRNG for deterministic generation
+function mulberry32(a) {
+  return function() {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = (t + Math.imul(t ^ t >>> 7, 61 | t)) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+}
+
+function pick(rng, arr) {
+  return arr[Math.floor(rng() * arr.length)];
+}
+
+// Parameter pools - simplified for demonstration
+const pools = {
+  nm: {
+    functions: ['ax - be^(-kx)', 'x³ - αx - β', 'cos(kx) - x', 'e^x - γx', 'ln(x+δ) - η'],
+    odes: ['y\' = ay', 'y\' = x + y', 'y\' = -2xy', 'y\' = sin(x)·y'],
+    params: {a: [1.5,2,2.5,3], b: [1,1.5,2,2.5], k: [0.8,1,1.5,2]}
+  },
+  cf: {
+    maps: ['Logistic: xₙ₊₁ = r·xₙ(1-xₙ)', 'Tent: f(x) = s·min(x,1-x)'],
+    juliaC: ['-0.745+0.186i', '-0.8+0.156i', '-0.12-0.75i', '0.2-0.2i'],
+    r: [2.8, 3.2, 3.45, 3.55, 3.7, 3.83]
+  }
+};
+
+// Generate assignment text
+function generateText(variant, student, sid) {
+  const rng = mulberry32(variant * 0xBEEF);
+  
+  if(currentCourse === 'nm') {
+    const func = pick(rng, pools.nm.functions);
+    const ode = pick(rng, pools.nm.odes);
+    const a = pick(rng, pools.nm.params.a);
+    const b = pick(rng, pools.nm.params.b);
+    
+    return `NUMERICAL METHODS - VARIANT ${variant}
+${student ? `Student: ${student}` : ''}
+${sid ? `ID: ${sid}` : ''}
+
+================================================================================
+MARKING SCHEME: Q1 (15) + Q2 (15) + Q3 (15) + Q4 (15) + Q5 (40) = 100 marks
+================================================================================
+
+QUESTION 1: Root-Finding Algorithms (15 marks)
+------------------------------------------------
+Given function: f(x) = ${func} with parameters a=${a}, b=${b}
+Bracketing interval: [0, 3]
+
+(a) Fixed-point iterations (5 marks)
+    - Find three rearrangements x = g(x)
+    - Show convergence behavior for each
+    - Include cobweb diagram
+
+(b) Newton-Raphson method (6 marks)
+    - Perform 10 iterations
+    - Determine convergence order
+    - Calculate asymptotic error constant
+
+(c) Multiple roots discussion (4 marks)
+    - Explain modified convergence for repeated roots
+
+QUESTION 2: Taylor Series Approximation (15 marks)
+---------------------------------------------------
+Function: y = sin(x) on [0, π]
+Expansion point: x = π/2
+
+(a) Construct Taylor polynomial T₆(x) through T₁₀(x) (4 marks)
+(b) Derive theoretical error bounds (4 marks)
+(c) Plot empirical errors |y - Tₙ(x)| (5 marks)
+(d) Discuss truncation vs round-off error (2 marks)
+
+QUESTION 3: First-Order ODE (15 marks)
+---------------------------------------
+Initial value problem: ${ode}
+Initial condition: y(0) = 1
+Integration interval: [0, 5]
+
+(a) Implement Euler and Modified Euler methods (5 marks)
+(b) Apply RK4 and plot all solutions (4 marks)
+(c) Compare errors using exact solution (5 marks)
+(d) Analyze computational cost vs accuracy (1 mark)
+
+QUESTION 4: Second-Order ODE (15 marks)
+----------------------------------------
+Model: y'' = -2cy' - 0.75c²y with c = ${a}
+Initial conditions: y(0) = 10, y'(0) = 25
+
+(a) Convert to first-order system (5 marks)
+(b) Locate local maximum numerically (5 marks)
+(c) Refine using root-finding on y' (3 marks)
+(d) Study energy dissipation (2 marks)
+
+QUESTION 5: Presentation (40 marks)
+------------------------------------
+Components:
+• Written draft (10 marks): 150-250 words + figure/slide
+  - Submit 48 hours before presentation slot
+  - Marks only awarded if presentation is delivered
+
+• Oral presentation (30 marks): 3 minutes maximum
+  - Display variant number clearly
+  - Present one quantitative result
+  - Explain methodology and rationale
+  - Include brief reflection
+
+Rubric breakdown:
+- Draft: Structure (3), Mathematical soundness (3), Evidence (2), References (2)
+- Presentation: Correctness (12), Rationale (8), Clarity (5), Visuals (3), Delivery (2)`;
+    
+  } else {
+    const map = pick(rng, pools.cf.maps);
+    const r = pick(rng, pools.cf.r);
+    const c1 = pick(rng, pools.cf.juliaC);
+    const c2 = pick(rng, pools.cf.juliaC);
+    
+    return `DYNAMICAL SYSTEMS, CHAOS & FRACTALS - VARIANT ${variant}
+${student ? `Student: ${student}` : ''}
+${sid ? `ID: ${sid}` : ''}
+
+================================================================================
+MARKING SCHEME: Q1 (15) + Q2 (15) + Q3 (15) + Q4 (15) + Q5 (40) = 100 marks
+================================================================================
+
+QUESTION 1: One-Dimensional Maps (15 marks)
+--------------------------------------------
+Map: ${map} with r = ${r}
+Initial conditions: x₀ ∈ {0.1, 0.3, 0.9}
+
+(a) Iteration analysis (6 marks)
+    - Compute 200 iterations for each x₀
+    - Create cobweb diagram
+    - Identify fixed/periodic points
+
+(b) Sensitivity to initial conditions (6 marks)
+    - Compare x₀ and x₀ + 10⁻⁶
+    - Plot |Δxₙ| on log scale
+    - Measure Lyapunov exponent
+
+(c) Transient behavior (3 marks)
+    - Determine settling time
+    - Classify attractor type
+
+QUESTION 2: Fixed and Periodic Points (15 marks)
+-------------------------------------------------
+Map for analysis: Tent map f(x) = ${r}·min(x, 1-x)
+
+(a) Graphical analysis (2 marks)
+(b) Find all fixed points algebraically (3 marks)
+(c) Determine stability via |f'(x*)| (3 marks)
+(d) Locate period-2 and period-3 orbits (5 marks)
+(e) Describe long-term dynamics (2 marks)
+
+QUESTION 3: Julia Sets (15 marks)
+----------------------------------
+Iterator: g(z) = z² + c
+
+(a) Derive escape radius criterion (4 marks)
+(b) Generate 500×500 image for c = ${c1} (6 marks)
+    - Domain: Re, Im ∈ [-1, 1]
+    - Maximum iterations: 100
+(c) Compare with c = ${c2} (3 marks)
+(d) Discuss resolution and precision effects (2 marks)
+
+QUESTION 4: Fractal Dimension (15 marks)
+-----------------------------------------
+Dataset: Crumpled paper contour (provided separately)
+
+(a) Box-counting implementation (5 marks)
+    - Use ε = 2⁻ᵏ for k = 1, 2, ..., 8
+    - Count N(ε) for each scale
+(b) Estimate dimension via linear regression (6 marks)
+    - Plot log N vs log(1/ε)
+    - Calculate D with confidence interval
+(c) Clinical interpretation (4 marks)
+    - Relate to tissue irregularity
+    - Discuss diagnostic implications
+
+QUESTION 5: Presentation (40 marks)
+------------------------------------
+Components:
+• Written draft (10 marks): 150-250 words + figure/slide
+  - Submit 48 hours before presentation slot
+  - Marks only awarded if presentation is delivered
+
+• Oral presentation (30 marks): 3 minutes maximum
+  - Display variant number clearly
+  - Present one quantitative result
+  - Explain methodology and rationale
+  - Include brief reflection
+
+Rubric breakdown:
+- Draft: Structure (3), Mathematical soundness (3), Evidence (2), References (2)
+- Presentation: Correctness (12), Rationale (8), Clarity (5), Visuals (3), Delivery (2)`;
+  }
+}
+
+// Generate preview
+function generatePreview() {
+  const variant = document.getElementById('variant').value;
+  if(!variant) {
+    alert('Please select a variant number');
+    return;
+  }
+  
+  const student = document.getElementById('student').value;
+  const sid = document.getElementById('sid').value;
+  
+  const text = generateText(parseInt(variant), student, sid);
+  document.getElementById('preview').textContent = text;
+  document.getElementById('status').innerHTML = '<div class="status">✓ Preview generated successfully</div>';
+}
+
+// Download PDF
+function downloadPDF() {
+  const variant = document.getElementById('variant').value;
+  if(!variant) {
+    alert('Please select a variant number first');
+    return;
+  }
+  
+  const student = document.getElementById('student').value || 'student';
+  const sid = document.getElementById('sid').value;
+  const text = generateText(parseInt(variant), student, sid);
+  
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  doc.setFontSize(11);
+  const lines = doc.splitTextToSize(text, 170);
+  
+  let y = 20;
+  for(const line of lines) {
+    if(y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+    doc.text(line, 20, y);
+    y += 5;
+  }
+  
+  const courseName = currentCourse === 'nm' ? 'NM' : 'CF';
+  const fileName = `${courseName}_variant${variant}_${student.toLowerCase().replace(/\s+/g, '_')}.pdf`;
+  doc.save(fileName);
+  
+  document.getElementById('status').innerHTML = '<div class="status">✓ PDF downloaded successfully</div>';
+}
+</script>
+
+</body>
+</html>
