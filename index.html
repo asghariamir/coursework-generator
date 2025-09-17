@@ -222,7 +222,7 @@ const pools = {
 function generateNMLaTeX(variant, student, sid) {
   const rng = mulberry32(0xA11CE ^ variant);
   
-  // Generate parameters...
+  // Q1 parameters
   const fam1 = pick(rng, pools.nm.q1Families);
   const params1 = {};
   for(const k in (fam1.params||{})) params1[k] = pick(rng, fam1.params[k]);
@@ -233,6 +233,34 @@ function generateNMLaTeX(variant, student, sid) {
   else if(fam1.key === 'coskx_minus_x') eq1 = `\\cos(${params1.k}x) - x = 0`;
   else if(fam1.key === 'exp_minus_gamma_x') eq1 = `e^x - ${params1.gamma} x = 0`;
   else eq1 = `\\ln(x+${params1.delta}) - ${params1.eta} = 0`;
+
+  // Q2 function
+  const Q2 = pick(rng, pools.nm.q2Funcs);
+  const midpoint = ((Q2.A + Q2.B) / 2).toFixed(4);
+
+  // Q3 ODE
+  const fam3 = pick(rng, pools.nm.q3Families);
+  let q3eq, q3exact;
+  if(fam3.key === 'ay') {
+    const a = pick(rng, fam3.params.a);
+    q3eq = `\\frac{dy}{dx} = ${a} y, \\quad y(0) = 1`;
+    q3exact = `y = e^{${a}x}`;
+  } else if(fam3.key === 'x_plus_y') {
+    q3eq = `\\frac{dy}{dx} = x + y, \\quad y(0) = 1`;
+    q3exact = `y = 2 e^{x} - x - 1`;
+  } else {
+    q3eq = `\\frac{dy}{dx} = -2xy, \\quad y(0) = 2`;
+    q3exact = `y = 2 e^{-x^2}`;
+  }
+
+  // Q4 parameters
+  const P4 = {
+    c: pick(rng, pools.nm.q4Params.c),
+    y0: pick(rng, pools.nm.q4Params.y0),
+    v0: pick(rng, pools.nm.q4Params.v0)
+  };
+  const Acoef = ((3*P4.y0 + (2*P4.v0)/P4.c)/2).toFixed(4);
+  const Bcoef = (P4.y0 - parseFloat(Acoef)).toFixed(4);
 
   return `\\documentclass[11pt,a4paper]{article}
 \\usepackage[margin=2.5cm]{geometry}
@@ -249,9 +277,12 @@ function generateNMLaTeX(variant, student, sid) {
 \\cfoot{\\thepage}
 \\renewcommand{\\headrulewidth}{0.4pt}
 
+% Remove duplicate title on first page
+\\thispagestyle{empty}
+
 \\begin{document}
 
-% Title
+% Title - only once
 \\begin{center}
 {\\LARGE \\textbf{NUMERICAL METHODS}}\\\\[0.5em]
 {\\Large \\textbf{VARIANT ${variant}}}\\\\[1em]
@@ -291,7 +322,91 @@ where $f$ is the function of interest and $x^*$ is the appropriate real root of 
 \\hfill [3 marks]
 \\end{enumerate}
 
-% Continue with other questions...
+\\section*{Question 2: Taylor expansions — 15 marks}
+
+Corrugation is a process of bending material into a regular wave pattern which gives it greater strength than if a flat sheet is used. In this variant, take
+\\[ y(x) = ${Q2.f} \\]
+on the interval $[${Q2.A.toFixed(4)}, ${Q2.B.toFixed(4)}]$.
+
+The arc length $l$ of this function between two points $a$ and $b$ is given by
+\\[ l = \\int_a^b \\sqrt{1 + \\left(\\frac{dy}{dx}\\right)^2} \\, dx \\]
+
+This integral can be approximated using a Taylor expansion of the integrand about the midpoint $x = ${midpoint}$.
+
+\\begin{enumerate}[label=(\\alph*)]
+\\item Provide an approximation of the arc length $l$ for the given interval using a Taylor expansion of order 6 centred about the midpoint. Include a plot of both the Taylor approximation and the analytical integrand $I(x) = \\sqrt{1 + (dy/dx)^2}$.
+\\hfill [3 marks]
+
+\\item Provide an upper bound of the error for your approximation in part (a), carefully justifying all steps in your calculation.
+\\hfill [7 marks]
+
+\\item Provide a further 4 approximations using Taylor expansions of degree 7, 8, 9 and 10, and place the results in a table. State, with explanations, the highest decimal place accuracy of the solutions.
+\\hfill [3 marks]
+
+\\item Using the periodicity/structure of $y(x)$ where appropriate, provide an estimate of the integral over a larger interval by symmetry/period arguments and verify it numerically with a definite integral routine in your chosen tool.
+\\hfill [2 marks]
+\\end{enumerate}
+
+\\section*{Question 3: First-order ODEs — 15 marks}
+
+\\begin{enumerate}[label=(\\alph*)]
+\\item Describe, with the aid of a sketch or sketches, both the basic and modified Euler's methods for solving first-order differential equations of the form $dy/dx = f(x,y)$, with initial condition $y(x_0)=y_0$. Explain why the modified method should provide a more accurate approximation than the basic method.
+\\hfill [5 marks]
+
+\\item Use the basic Euler's method with a step size $h = 0.05$ to find an estimate of the solution $y$ when $x = 0.1$ for the differential equation
+\\[ ${q3eq} \\]
+\\hfill [3 marks]
+
+\\item For the same equation and initial condition as part (b), implement 10 steps of size 0.5 for both the modified Euler and Runge–Kutta 4th-order methods to find estimates from $y(0)$ to $y(5)$.
+\\hfill [3 marks]
+
+\\item The true solution is:
+\\[ ${q3exact} \\]
+Sketch/plot this function and plot your approximate solutions from part (c) on the same axes. Comment on the results.
+\\hfill [4 marks]
+\\end{enumerate}
+
+\\section*{Question 4: Second-order ODEs — 15 marks}
+
+Two touching blocks are positioned on a steel top whose temperature is maintained at $0^\\circ$C. The heat transfer coefficient between the two blocks and between the blocks and the table is $c > 0$. This leads to the second-order differential equation:
+\\[ \\frac{d^2 y}{dx^2} = -2c \\frac{dy}{dx} - 0.75 c^2 y \\]
+
+For this variant take $c = ${P4.c}$, $y(0) = ${P4.y0}$, $y'(0) = ${P4.v0}$.
+
+\\begin{enumerate}[label=(\\alph*)]
+\\item State the general form of the modified Euler's method for solving second-order ODEs of this form, appropriately defining any functions or variables that you introduce.
+\\hfill [4 marks]
+
+\\item Use the modified Euler's method to calculate 10 estimates with step size 0.1 and the initial conditions as stated above. Clearly display the final estimate of $y(1)$ only.
+\\hfill [3 marks]
+
+\\item Using the output from part (b), state the interval in which a local maximum is located and explain why you selected this interval.
+\\hfill [2 marks]
+
+\\item The specific solution that satisfies the initial conditions is
+\\[ y = ${Acoef} e^{-${(P4.c/2).toFixed(3)}x} + ${Bcoef} e^{-${(3*P4.c/2).toFixed(3)}x} \\]
+Verify this by symbolic/numeric means. Now use the derivative of the specific solution along with $\\approx 5$ iterations of a secant (or similar) method, starting with your interval from part (c), to verify a local maximum in that interval.
+\\hfill [6 marks]
+\\end{enumerate}
+
+\\section*{Question 5: Presentation — 40 marks}
+
+\\textbf{Draft (10 marks):} 150–250 words + 1-slide storyboard or figure placeholder. Submit 48 hours before your presentation slot. \\emph{Note: Draft marks are awarded only if you actually present.}
+
+\\textbf{Presentation (30 marks):} 3 minutes maximum.
+\\begin{itemize}
+\\item Display your variant number clearly
+\\item Present one quantitative result from Q1–Q4
+\\item Explain your methodology and rationale
+\\item Include a brief reflection on the problem
+\\end{itemize}
+
+\\textbf{Rubric:}
+\\begin{itemize}
+\\item Draft: Structure \\& focus (3), Mathematical soundness (3), Evidence plan (2), References/tools (2)
+\\item Presentation: Correctness \\& insight (12), Method rationale (8), Clarity \\& structure (5), Visuals (3), Timing \\& delivery (2)
+\\end{itemize}
+
 \\end{document}`;
 }
 
@@ -309,6 +424,18 @@ function generateCFLaTeX(variant, student, sid) {
     mapDesc = `x_{n+1} = ${ab.a} x_n (1 - ${ab.b} x_n)`;
   }
 
+  // Q2 map
+  const sTent = pick(rng, pools.cf.tentS);
+  const r2 = pick(rng, pools.cf.rVals);
+  const useTent = pick(rng, [true, false]);
+  let q2map = useTent 
+    ? `f(x) = ${sTent} \\cdot \\min(x, 1-x)` 
+    : `f(x) = ${r2} x (1-x)`;
+
+  // Q3 Julia constants
+  const c1 = pick(rng, pools.cf.juliaC);
+  const c2 = pick(rng, pools.cf.juliaC.filter(c => c !== c1));
+
   return `\\documentclass[11pt,a4paper]{article}
 \\usepackage[margin=2.5cm]{geometry}
 \\usepackage{amsmath,amssymb,amsthm}
@@ -324,9 +451,12 @@ function generateCFLaTeX(variant, student, sid) {
 \\cfoot{\\thepage}
 \\renewcommand{\\headrulewidth}{0.4pt}
 
+% Remove duplicate title on first page
+\\thispagestyle{empty}
+
 \\begin{document}
 
-% Title
+% Title - only once
 \\begin{center}
 {\\LARGE \\textbf{DYNAMICAL SYSTEMS, CHAOS \\& FRACTALS}}\\\\[0.5em]
 {\\Large \\textbf{VARIANT ${variant}}}\\\\[1em]
@@ -363,7 +493,105 @@ Use $x_0 = 0.1$.
 \\hfill [6 marks]
 \\end{enumerate}
 
-% Continue with other questions...
+\\section*{Question 2: Fixed and periodic points — 15 marks}
+
+Use the map $f$ specified here and keep it the same for parts (a)–(e):
+\\[ ${q2map} \\]
+
+\\begin{enumerate}[label=(\\alph*)]
+\\item On the same axes, plot the graphs of $y = f(x)$ and $y = x$ over the relevant domain.
+\\hfill [2 marks]
+
+\\item Find all fixed points of the map algebraically (or with symbolic algebra). Explain how your plots in (a) are consistent with these results.
+\\hfill [3 marks]
+
+\\item Compute the stability of the fixed points (use $|f'(x^*)|$ to classify attracting/repelling).
+\\hfill [3 marks]
+
+\\item Find the periodic points up to period 3 and compute their stability.
+\\hfill [5 marks]
+
+\\item Using your results from (c)–(d), describe the likely long-term behaviour for typical initial conditions; no orbit plots are required here.
+\\hfill [2 marks]
+\\end{enumerate}
+
+\\section*{Question 3: Filled Julia sets — 15 marks}
+
+Given $g: \\mathbb{C} \\to \\mathbb{C}$, define $z_{n+1} = g(z_n)$. Let $g(z) = z^2 + c$, with complex $c$.
+
+The filled-in Julia set is the set of all $z_0$ that do not escape to infinity under $g$. It is known that if $|z_n| > 2$ for any $n$, the orbit escapes (so $z_0$ is not in the filled set). The first $n$ for which this is true is the ``escape iteration''. Lower escape iteration means a quick escape; high or infinite values indicate bounded orbits.
+
+\\begin{enumerate}[label=(\\alph*)]
+\\item Write a function that computes the escape iteration for a given $z_0$ and $c$. Include a maximum number of iterations $n_{\\text{Max}}$, and return $n_{\\text{Max}}$ if $|z_n|$ never exceeds 2.
+\\hfill [3 marks]
+
+\\item Using your function, produce a plot of the filled Julia set with $c = ${c1}$. Steps:
+\\begin{itemize}
+\\item Generate a $500 \\times 500$ grid of initial points $z_0$ with $\\text{Re}, \\text{Im} \\in [-1,1]$.
+\\item Compute escape iteration for each $z_0$ with $n_{\\text{Max}} = 100$ to form a matrix $M$.
+\\item Plot a labelled colour image of $M$ and add a colour bar.
+\\end{itemize}
+\\hfill [7 marks]
+
+\\item Repeat for $c = ${c2}$ and create three plots using $n_{\\text{Max}} = 50, 100, 1000$ (as feasible). Comment on the differences (connectedness, filaments, etc.).
+\\hfill [5 marks]
+\\end{enumerate}
+
+\\section*{Question 4: Fractal dimension of a crumpled piece of paper — 15 marks}
+
+\\textbf{Context (read-only).} \\emph{A flat sheet of paper is two-dimensional. A solid ball is three-dimensional. But what is the dimension of a crumpled piece of paper? It fills 3D space, but it's mostly empty air. This object is a real-world fractal, and its dimension is typically between 2 and 3. We can estimate this dimension using the scaling law $M \\propto R^D$, where $M$ is the mass of the paper, $R$ is its radius, and $D$ is the fractal dimension we want to find.}
+
+\\textbf{How to perform the experiment (cohort data collection).}
+\\begin{itemize}
+\\item \\textbf{Step 1: Get your materials.} Use several sheets of the \\textbf{same paper type} but \\textbf{different sizes} (e.g., A5, A4, A3) or cut squares of different side lengths (e.g., 10 cm, 15 cm, 20 cm, \\ldots). You also need a ruler.
+\\item \\textbf{Step 2: Create the paper balls.} Crumple each sheet into the \\textbf{tightest ball you can make} with your hands.
+\\item \\textbf{Step 3: Measure the radius $R$.} For each ball, measure its \\textbf{diameter in several directions} and take the \\textbf{average diameter}; the radius is \\textbf{half} of this average. Record $R$.
+\\item \\textbf{Step 4: Determine the ``mass'' $M$.} For standard paper of uniform density, \\textbf{mass is proportional to area}, so use the sheet's \\textbf{original area} as its ``mass''. Example: A4 (21 cm $\\times$ 29.7 cm) has area 623.7 cm$^2$; A5 is half of that; A3 is double. For squares, $M =$ (side length)$^2$. Record $M$.
+\\item \\textbf{Step 5: Enter your data.} Go to the \\textbf{Data Analysis Lab} (shared class sheet) and enter your pairs $(R, M)$. Add at least \\textbf{three points} from your own experiment; you may also use additional points from classmates (pooled dataset).
+\\end{itemize}
+
+\\begin{enumerate}[label=(\\alph*)]
+\\item \\textbf{Method \\& log–log plot — 5 marks}
+\\begin{itemize}
+\\item Assemble a dataset with \\textbf{your $\\geq 3$ points} plus \\textbf{$\\geq 2$ additional cohort points} ($\\geq 5$ total). Convert units to \\textbf{$R$ in cm}, \\textbf{$M$ in cm$^2$} (if you used area).
+\\item Define $x = \\log R$, $y = \\log M$ and produce a \\textbf{labelled log–log scatter} (axes, units, caption).
+\\item Note any obvious outliers and state briefly whether you kept or excluded them (and why).
+\\end{itemize}
+\\textbf{Deliverable (a):} the log–log plot and a 2–3 sentence note on how you measured diameters and computed $M$.
+
+\\item \\textbf{Estimating $D$ \\& robustness — 6 marks}
+\\begin{itemize}
+\\item Fit the line $y = \\alpha + D x$ to your selected points using least squares; report $\\hat{D}$, $R^2$, and a \\textbf{95\\% CI or standard error} for $D$.
+\\item \\textbf{Robustness check:} repeat the fit on a \\textbf{different subset} (e.g., only your points; or exclude the smallest and largest $R$) and comment on any change in $\\hat{D}$.
+\\item State whether $\\hat{D} \\in (2,3)$ and what that implies physically about how the crumpled ball fills space.
+\\end{itemize}
+\\textbf{Deliverable (b):} a small table (ID/size, $R$, $M$) and the two fitted results with a 1–2 sentence comparison.
+
+\\item \\textbf{Interpretation — 4 marks}\\\\
+In $\\sim$150–200 words, interpret your $\\hat{D}$: discuss measurement uncertainty (averaging diameters, non-sphericity), paper/size effects, and why pooling across the cohort helps reveal a clearer scaling law. Keep this focused on the \\textbf{physics of space-filling}.
+\\end{enumerate}
+
+\\textbf{Marking:} (a) Method \\& plot 5 • (b) Estimation \\& robustness 6 • (c) Interpretation 4\\\\
+\\textbf{Notes:} Work is individual; the dataset is shared. State any tools you used.
+
+\\section*{Question 5: Presentation — 40 marks}
+
+\\textbf{Draft (10 marks):} 150–250 words + 1-slide storyboard or figure placeholder. Submit 48 hours before your presentation slot. \\emph{Note: Draft marks are awarded only if you actually present.}
+
+\\textbf{Presentation (30 marks):} 3 minutes maximum.
+\\begin{itemize}
+\\item Display your variant number clearly
+\\item Present one quantitative result from Q1–Q4
+\\item Explain your methodology and rationale
+\\item Include a brief reflection on the problem
+\\end{itemize}
+
+\\textbf{Rubric:}
+\\begin{itemize}
+\\item Draft: Structure \\& focus (3), Mathematical soundness (3), Evidence plan (2), References/tools (2)
+\\item Presentation: Correctness \\& insight (12), Method rationale (8), Clarity \\& structure (5), Visuals (3), Timing \\& delivery (2)
+\\end{itemize}
+
 \\end{document}`;
 }
 
