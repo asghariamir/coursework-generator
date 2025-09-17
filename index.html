@@ -3,13 +3,16 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Coursework Generator — 30 Variants</title>
+<title>Coursework Generator — Full Version with Complete Questions</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 :root{--ink:#111827;--muted:#6b7280;--primary:#2563eb;--bg:#f9fafb;--card:#fff;--border:#e5e7eb}
 *{box-sizing:border-box}
 html,body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
-.container{max-width:1000px;margin:0 auto;padding:20px}
+.container{max-width:1200px;margin:0 auto;padding:20px}
 .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:40px 20px;text-align:center;border-radius:12px;margin-bottom:30px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
 .header h1{margin:0 0 10px;font-size:36px;font-weight:700}
 .header p{margin:0;opacity:0.95;font-size:18px}
@@ -27,17 +30,23 @@ button{padding:12px 24px;border:none;border-radius:8px;font-size:15px;font-weigh
 .btn-primary:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.2)}
 .btn-secondary{background:#e5e7eb;color:var(--ink)}
 .btn-secondary:hover{background:#d1d5db}
+.btn-danger{background:#ef4444;color:white}
+.btn-danger:hover{background:#dc2626}
 .course-selector{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
 .course-btn{padding:16px;border:2px solid var(--border);border-radius:8px;background:white;cursor:pointer;transition:all 0.2s;text-align:left}
 .course-btn:hover{border-color:var(--primary);background:#f0f4ff}
 .course-btn.active{border-color:var(--primary);background:linear-gradient(to right,#f0f4ff,#e6efff);box-shadow:0 2px 8px rgba(37,99,235,0.1)}
 .course-btn h3{margin:0 0 4px;color:var(--primary);font-size:16px}
 .course-btn p{margin:0;font-size:13px;color:var(--muted)}
-.preview-box{background:#f8f9fa;border:1px solid var(--border);border-radius:8px;padding:20px;min-height:300px;max-height:600px;overflow-y:auto;font-family:'SF Mono','Monaco','Inconsolata','Fira Code',monospace;font-size:13px;line-height:1.6;white-space:pre-wrap}
+.preview-box{background:#f8f9fa;border:1px solid var(--border);border-radius:8px;padding:20px;min-height:300px;max-height:600px;overflow-y:auto;font-family:'SF Mono','Monaco','Inconsolata','Fira Code',monospace;font-size:12px;line-height:1.8;white-space:pre-wrap}
+.katex{font-size:1.1em}
+.katex-display{margin:1em 0}
 .info-box{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:16px;border-radius:8px;margin:20px 0}
 .info-box strong{display:block;margin-bottom:8px;font-size:16px}
+.warning-box{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:16px;border-radius:8px;margin:20px 0}
 .footer{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
 .status{padding:8px 12px;background:#e6efff;color:var(--primary);border-radius:6px;font-size:14px;margin:10px 0;display:inline-block}
+.batch-controls{background:#f3f4f6;padding:20px;border-radius:8px;margin-top:20px}
 @media(max-width:600px){
   .grid{grid-template-columns:1fr}
   .course-selector{grid-template-columns:1fr}
@@ -49,42 +58,38 @@ button{padding:12px 24px;border:none;border-radius:8px;font-size:15px;font-weigh
 
 <div class="container">
   <div class="header">
-    <h1>📚 Coursework Generator</h1>
-    <p>30 Unique Variants per Coursework • Deterministic Assignment</p>
+    <h1>📚 Coursework Generator — Instructor Version</h1>
+    <p>Generate Individual PDFs for All 30 Variants • Complete Questions Included</p>
   </div>
 
   <div class="card">
-    <h2>ℹ️ How It Works</h2>
+    <h2>ℹ️ How This Works</h2>
     <div class="info-box">
-      <strong>🎲 Automatic Variant Assignment</strong>
-      Your variant is determined by your Student ID using: <code style="background:rgba(255,255,255,0.2);padding:2px 6px;border-radius:4px;">Variant = 1 + (last 6 digits % 30)</code>
-      <br>Example: ID 21111438943 → 438943 % 30 = 13 → Variant 14
+      <strong>🎯 Purpose</strong>
+      This tool generates personalized PDF assignments for each student based on their ID.
+      Each variant has unique parameters but identical question structure.
     </div>
     
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:20px">
-      <div style="padding:12px;background:#f0f9ff;border-radius:8px;border-left:4px solid #0ea5e9">
-        <strong style="color:#0c4a6e">Q1-Q4</strong><br>
-        <span style="font-size:14px;color:#475569">15 marks each</span>
-      </div>
-      <div style="padding:12px;background:#fef3c7;border-radius:8px;border-left:4px solid #f59e0b">
-        <strong style="color:#78350f">Q5 Presentation</strong><br>
-        <span style="font-size:14px;color:#475569">40 marks total</span>
-      </div>
+    <div class="warning-box">
+      <strong>⚠️ Instructor Use Only</strong>
+      This version includes complete question text. Use this to generate all student PDFs before the coursework release.
+      Upload the PDFs to Canvas, then provide students with the ID-to-link interface.
     </div>
   </div>
 
   <div class="card">
-    <h2>🔧 Generate Your Assignment</h2>
+    <h2>🔧 Generate Individual Assignment</h2>
     
     <div class="grid">
       <div class="input-group">
         <label for="student">Student Name</label>
-        <input id="student" type="text" placeholder="Optional - for PDF filename">
+        <input id="student" type="text" placeholder="e.g., Alex Johnson" required>
+        <div class="hint">Will appear on PDF header</div>
       </div>
       <div class="input-group">
         <label for="sid">Student ID</label>
-        <input id="sid" type="text" placeholder="e.g., 21111438943">
-        <div class="hint">Enter to auto-assign your variant</div>
+        <input id="sid" type="text" placeholder="e.g., 21111438943" required>
+        <div class="hint">Full ID for header and variant calculation</div>
       </div>
     </div>
 
@@ -103,9 +108,9 @@ button{padding:12px 24px;border:none;border-radius:8px;font-size:15px;font-weigh
       <div class="input-group">
         <label for="variant">Variant Number</label>
         <select id="variant">
-          <option value="">Select variant...</option>
+          <option value="">Auto-calculate from ID</option>
         </select>
-        <div class="hint">Auto-fills from Student ID</div>
+        <div class="hint">Auto-fills from Student ID (last 6 digits % 30)</div>
       </div>
     </div>
 
@@ -121,15 +126,29 @@ button{padding:12px 24px;border:none;border-radius:8px;font-size:15px;font-weigh
     <div id="status"></div>
   </div>
 
+  <div class="card batch-controls">
+    <h2>🔄 Batch Generation</h2>
+    <p>Generate all 30 variants at once for a coursework:</p>
+    <div class="btn-group">
+      <button class="btn-danger" onclick="generateAllPDFs('cf')">
+        Generate All CF PDFs (30 variants)
+      </button>
+      <button class="btn-danger" onclick="generateAllPDFs('nm')">
+        Generate All NM PDFs (30 variants)
+      </button>
+    </div>
+    <div class="hint" style="margin-top:10px">⚠️ This will download 30 PDF files. Use a test student name.</div>
+  </div>
+
   <div class="card">
     <h2>👁️ Preview</h2>
-    <div id="preview" class="preview-box">Your personalized assignment will appear here...</div>
+    <div id="preview" class="preview-box">Enter student details above to preview their personalized assignment...</div>
   </div>
 
   <div class="footer">
     <p>© 2025 Coursework Generator • All processing happens in your browser • No data is uploaded</p>
     <p style="margin-top:10px">
-      <strong>Academic Integrity:</strong> Open-book allowed. You must state all tools/sources used.
+      <strong>Next steps:</strong> Upload PDFs to Canvas, then use the student interface for ID-based linking
     </p>
   </div>
 </div>
@@ -152,7 +171,7 @@ document.getElementById('sid').addEventListener('input', function(e) {
     const last6 = parseInt(digits.slice(-6), 10);
     const variant = 1 + (last6 % 30);
     variantSelect.value = variant;
-    document.getElementById('status').innerHTML = `<div class="status">✓ Auto-assigned Variant ${variant}</div>`;
+    document.getElementById('status').innerHTML = `<div class="status">✓ Auto-assigned Variant ${variant} from ID</div>`;
   }
 });
 
@@ -177,226 +196,514 @@ function pick(rng, arr) {
   return arr[Math.floor(rng() * arr.length)];
 }
 
-// Parameter pools - simplified for demonstration
+// Parameter pools
 const pools = {
   nm: {
-    functions: ['ax - be^(-kx)', 'x³ - αx - β', 'cos(kx) - x', 'e^x - γx', 'ln(x+δ) - η'],
-    odes: ['y\' = ay', 'y\' = x + y', 'y\' = -2xy', 'y\' = sin(x)·y'],
-    params: {a: [1.5,2,2.5,3], b: [1,1.5,2,2.5], k: [0.8,1,1.5,2]}
+    q1Families: [
+      { key:'ax_minus_bexp', params:{a:[1.5,2,2.5,3,3.5], b:[1.2,1.6,2,2.4,3], k:[0.8,1,1.2,1.6,2,2.5,3]} },
+      { key:'cubic', params:{alpha:[0.7,1,2,3], beta:[1,2,3]} },
+      { key:'coskx_minus_x', params:{k:[1,1.2,1.5,2]} },
+      { key:'exp_minus_gamma_x', params:{gamma:[1.5,2,3,4]} },
+      { key:'log_shift_minus_eta', params:{delta:[0.5,1,2], eta:[0.1,0.3,0.5]} }
+    ],
+    q2Funcs: [
+      {f:"\\cos x",A:0,B:Math.PI}, {f:"\\sin x",A:0,B:Math.PI}, {f:"e^x",A:0,B:1.2}, {f:"e^{0.6x}",A:0,B:2.0},
+      {f:"\\ln(1+x)",A:0,B:0.9}, {f:"\\sqrt{1+x^2}",A:0,B:1.6}, {f:"\\arctan x",A:0,B:1.6}, {f:"e^{x/2} \\cos x",A:0,B:1.8},
+      {f:"e^{x/3} \\sin x",A:0,B:2.4}, {f:"\\cosh x",A:0,B:1.4}, {f:"\\sinh x",A:0,B:1.2}, {f:"(1+x)^{1/3}",A:0,B:0.8}
+    ],
+    q3Families: [
+      { key:'ay', params:{a:[-1.2,-1,-0.8,0.6,0.8,1]} },
+      { key:'x_plus_y', params:{} },
+      { key:'mxy', params:{} },
+      { key:'siny_y', params:{} },
+      { key:'lin_forced', params:{lambda:[0.6,0.8,1,1.2], B:[1.2,1.6,2], omega:[0.9,1,1.2]} }
+    ],
+    q4Params: { c:[1.5,2,2.5,3], y0:[8,10,12,14], v0:[20,25,30,35,40] }
   },
   cf: {
-    maps: ['Logistic: xₙ₊₁ = r·xₙ(1-xₙ)', 'Tent: f(x) = s·min(x,1-x)'],
-    juliaC: ['-0.745+0.186i', '-0.8+0.156i', '-0.12-0.75i', '0.2-0.2i'],
-    r: [2.8, 3.2, 3.45, 3.55, 3.7, 3.83]
+    x0Choices: [[0.1,0.3,0.9],[0.12,0.34,0.78],[0.2,0.37,0.51],[0.05,0.25,0.85]],
+    rVals:[2.8,3.2,3.45,3.55,3.62,3.7,3.83,3.9],
+    abCases: [{a:1,b:1},{a:1.5,b:0.5},{a:3.25,b:1},{a:1.2,b:0.9},{a:1.6,b:0.5}],
+    tentS:[1.6,1.7,1.8,1.9],
+    juliaC:["-0.745+0.186i","-0.8+0.156i","-0.12-0.75i","-0.101+0.635i","0.2-0.2i","-0.75+0.1i","-0.1+0.62i"]
   }
 };
 
-// Generate assignment text
-function generateText(variant, student, sid) {
-  const rng = mulberry32(variant * 0xBEEF);
+// Generate Numerical Methods text (complete version)
+function nmText(variant, student, sid) {
+  const rng = mulberry32(0xA11CE ^ variant);
   
-  if(currentCourse === 'nm') {
-    const func = pick(rng, pools.nm.functions);
-    const ode = pick(rng, pools.nm.odes);
-    const a = pick(rng, pools.nm.params.a);
-    const b = pick(rng, pools.nm.params.b);
-    
-    return `NUMERICAL METHODS - VARIANT ${variant}
-${student ? `Student: ${student}` : ''}
-${sid ? `ID: ${sid}` : ''}
-
-================================================================================
-MARKING SCHEME: Q1 (15) + Q2 (15) + Q3 (15) + Q4 (15) + Q5 (40) = 100 marks
-================================================================================
-
-QUESTION 1: Root-Finding Algorithms (15 marks)
-------------------------------------------------
-Given function: f(x) = ${func} with parameters a=${a}, b=${b}
-Bracketing interval: [0, 3]
-
-(a) Fixed-point iterations (5 marks)
-    - Find three rearrangements x = g(x)
-    - Show convergence behavior for each
-    - Include cobweb diagram
-
-(b) Newton-Raphson method (6 marks)
-    - Perform 10 iterations
-    - Determine convergence order
-    - Calculate asymptotic error constant
-
-(c) Multiple roots discussion (4 marks)
-    - Explain modified convergence for repeated roots
-
-QUESTION 2: Taylor Series Approximation (15 marks)
----------------------------------------------------
-Function: y = sin(x) on [0, π]
-Expansion point: x = π/2
-
-(a) Construct Taylor polynomial T₆(x) through T₁₀(x) (4 marks)
-(b) Derive theoretical error bounds (4 marks)
-(c) Plot empirical errors |y - Tₙ(x)| (5 marks)
-(d) Discuss truncation vs round-off error (2 marks)
-
-QUESTION 3: First-Order ODE (15 marks)
----------------------------------------
-Initial value problem: ${ode}
-Initial condition: y(0) = 1
-Integration interval: [0, 5]
-
-(a) Implement Euler and Modified Euler methods (5 marks)
-(b) Apply RK4 and plot all solutions (4 marks)
-(c) Compare errors using exact solution (5 marks)
-(d) Analyze computational cost vs accuracy (1 mark)
-
-QUESTION 4: Second-Order ODE (15 marks)
-----------------------------------------
-Model: y'' = -2cy' - 0.75c²y with c = ${a}
-Initial conditions: y(0) = 10, y'(0) = 25
-
-(a) Convert to first-order system (5 marks)
-(b) Locate local maximum numerically (5 marks)
-(c) Refine using root-finding on y' (3 marks)
-(d) Study energy dissipation (2 marks)
-
-QUESTION 5: Presentation (40 marks)
-------------------------------------
-Components:
-• Written draft (10 marks): 150-250 words + figure/slide
-  - Submit 48 hours before presentation slot
-  - Marks only awarded if presentation is delivered
-
-• Oral presentation (30 marks): 3 minutes maximum
-  - Display variant number clearly
-  - Present one quantitative result
-  - Explain methodology and rationale
-  - Include brief reflection
-
-Rubric breakdown:
-- Draft: Structure (3), Mathematical soundness (3), Evidence (2), References (2)
-- Presentation: Correctness (12), Rationale (8), Clarity (5), Visuals (3), Delivery (2)`;
-    
+  // Generate parameters for each question
+  const fam1 = pick(rng, pools.nm.q1Families);
+  const params1 = {};
+  for(const k in (fam1.params||{})) params1[k] = pick(rng, fam1.params[k]);
+  
+  let eq1;
+  if(fam1.key === 'ax_minus_bexp') eq1 = `$${params1.a} x - ${params1.b} e^{-${params1.k} x} = 0$ (a=${params1.a}, b=${params1.b}, k=${params1.k})`;
+  else if(fam1.key === 'cubic') eq1 = `$x^3 - ${params1.alpha} x - ${params1.beta} = 0$ (α=${params1.alpha}, β=${params1.beta})`;
+  else if(fam1.key === 'coskx_minus_x') eq1 = `$\\cos(${params1.k}x) - x = 0$ (k=${params1.k})`;
+  else if(fam1.key === 'exp_minus_gamma_x') eq1 = `$e^x - ${params1.gamma} x = 0$ (γ=${params1.gamma})`;
+  else eq1 = `$\\ln(x+${params1.delta}) - ${params1.eta} = 0$ (δ=${params1.delta}, η=${params1.eta}; domain x>-${params1.delta})`;
+  
+  const Q2 = pick(rng, pools.nm.q2Funcs);
+  
+  const fam3 = pick(rng, pools.nm.q3Families);
+  let q3eq, q3exact;
+  if(fam3.key === 'ay') {
+    const a = pick(rng, fam3.params.a);
+    q3eq = `$\\frac{dy}{dx} = ${a} y$, $y(0) = 1$`;
+    q3exact = `$y = e^{${a}x}$`;
+  } else if(fam3.key === 'x_plus_y') {
+    q3eq = `$\\frac{dy}{dx} = x + y$, $y(0) = 1$`;
+    q3exact = `$y = 2 e^{x} - x - 1$`;
+  } else if(fam3.key === 'mxy') {
+    q3eq = `$\\frac{dy}{dx} = -2xy$, $y(0) = 2$`;
+    q3exact = `$y = 2 e^{-x^2}$`;
+  } else if(fam3.key === 'siny_y') {
+    q3eq = `$\\frac{dy}{dx} = (\\sin x) y$, $y(0) = 1$`;
+    q3exact = `$y = e^{1 - \\cos x}$`;
   } else {
-    const map = pick(rng, pools.cf.maps);
-    const r = pick(rng, pools.cf.r);
-    const c1 = pick(rng, pools.cf.juliaC);
-    const c2 = pick(rng, pools.cf.juliaC);
-    
-    return `DYNAMICAL SYSTEMS, CHAOS & FRACTALS - VARIANT ${variant}
-${student ? `Student: ${student}` : ''}
-${sid ? `ID: ${sid}` : ''}
-
-================================================================================
-MARKING SCHEME: Q1 (15) + Q2 (15) + Q3 (15) + Q4 (15) + Q5 (40) = 100 marks
-================================================================================
-
-QUESTION 1: One-Dimensional Maps (15 marks)
---------------------------------------------
-Map: ${map} with r = ${r}
-Initial conditions: x₀ ∈ {0.1, 0.3, 0.9}
-
-(a) Iteration analysis (6 marks)
-    - Compute 200 iterations for each x₀
-    - Create cobweb diagram
-    - Identify fixed/periodic points
-
-(b) Sensitivity to initial conditions (6 marks)
-    - Compare x₀ and x₀ + 10⁻⁶
-    - Plot |Δxₙ| on log scale
-    - Measure Lyapunov exponent
-
-(c) Transient behavior (3 marks)
-    - Determine settling time
-    - Classify attractor type
-
-QUESTION 2: Fixed and Periodic Points (15 marks)
--------------------------------------------------
-Map for analysis: Tent map f(x) = ${r}·min(x, 1-x)
-
-(a) Graphical analysis (2 marks)
-(b) Find all fixed points algebraically (3 marks)
-(c) Determine stability via |f'(x*)| (3 marks)
-(d) Locate period-2 and period-3 orbits (5 marks)
-(e) Describe long-term dynamics (2 marks)
-
-QUESTION 3: Julia Sets (15 marks)
-----------------------------------
-Iterator: g(z) = z² + c
-
-(a) Derive escape radius criterion (4 marks)
-(b) Generate 500×500 image for c = ${c1} (6 marks)
-    - Domain: Re, Im ∈ [-1, 1]
-    - Maximum iterations: 100
-(c) Compare with c = ${c2} (3 marks)
-(d) Discuss resolution and precision effects (2 marks)
-
-QUESTION 4: Fractal Dimension (15 marks)
------------------------------------------
-Dataset: Crumpled paper contour (provided separately)
-
-(a) Box-counting implementation (5 marks)
-    - Use ε = 2⁻ᵏ for k = 1, 2, ..., 8
-    - Count N(ε) for each scale
-(b) Estimate dimension via linear regression (6 marks)
-    - Plot log N vs log(1/ε)
-    - Calculate D with confidence interval
-(c) Clinical interpretation (4 marks)
-    - Relate to tissue irregularity
-    - Discuss diagnostic implications
-
-QUESTION 5: Presentation (40 marks)
-------------------------------------
-Components:
-• Written draft (10 marks): 150-250 words + figure/slide
-  - Submit 48 hours before presentation slot
-  - Marks only awarded if presentation is delivered
-
-• Oral presentation (30 marks): 3 minutes maximum
-  - Display variant number clearly
-  - Present one quantitative result
-  - Explain methodology and rationale
-  - Include brief reflection
-
-Rubric breakdown:
-- Draft: Structure (3), Mathematical soundness (3), Evidence (2), References (2)
-- Presentation: Correctness (12), Rationale (8), Clarity (5), Visuals (3), Delivery (2)`;
+    const lambda = pick(rng, fam3.params.lambda);
+    const B = pick(rng, fam3.params.B);
+    const omega = pick(rng, fam3.params.omega);
+    q3eq = `$\\frac{dy}{dx} = -${lambda} y + ${B} \\cos(${omega} x)$, $y(0) = 1$`;
+    const denom = lambda*lambda + omega*omega;
+    const Acoef = (B/denom).toFixed(4);
+    const Ccoef = (1 - (B*lambda)/denom).toFixed(4);
+    q3exact = `$y = ${Acoef}\\cdot(${lambda.toFixed(3)} \\cos(${omega.toFixed(3)}x) + ${omega.toFixed(3)} \\sin(${omega.toFixed(3)}x)) + ${Ccoef}\\cdot e^{-${lambda.toFixed(3)}x}$`;
   }
+  
+  const P4 = {c: pick(rng, pools.nm.q4Params.c), y0: pick(rng, pools.nm.q4Params.y0), v0: pick(rng, pools.nm.q4Params.v0)};
+  const Acoef4 = (3*P4.y0 + (2*P4.v0)/P4.c)/2;
+  const Bcoef4 = P4.y0 - Acoef4;
+  const exactQ4 = `$y = ${Acoef4.toFixed(4)} e^{-${(P4.c/2).toFixed(3)}x} + ${Bcoef4.toFixed(4)} e^{-${(3*P4.c/2).toFixed(3)}x}$`;
+
+  return `**NUMERICAL METHODS — VARIANT ${variant}**
+**Student:** ${student}
+**ID:** ${sid}
+
+================================================================================
+MARKING: Q1 (15) + Q2 (15) + Q3 (15) + Q4 (15) + Q5 (40) = 100 marks
+================================================================================
+
+**QUESTION 1: Root-finding algorithms — 15 marks**
+
+(a) For the equation
+${eq1},
+find three different rearrangements of the form $x = g(x)$ such that the iterative scheme
+$x_{n+1} = g(x_n)$:
+   i. Converges to a real root.
+   ii. Converges to the same real root as part (i), but at a faster rate.
+   iii. Fails to converge to a real root.
+
+In each case you should compute the results of 30 iterations, starting at the same initial
+condition $x_0 = 0.4$, and provide an explanation for the specific behaviour you present.
+[5 marks]
+
+(b) Now use the Newton–Raphson method to find the real solutions of the same equation.
+   i. Generate and display 10 successive iterations of the Newton–Raphson process from
+      any starting value, stating the approximate solution of the equation to 10 decimal places.
+   ii. Use these successive iterations to deduce the order of convergence of the method,
+       and deduce the approximate asymptotic error constant $A$ for this equation.
+   iii. Verify that the asymptotic error constant obtained approximately agrees with the
+        theoretical asymptotic error constant of the method $A = \\frac{f''(x^*)}{2 f'(x^*)}$,
+        where $f$ is the function of interest and $x^*$ is the appropriate real root of $f$.
+[7 marks]
+
+(c) Write a short report that investigates the rate of convergence of the Newton–Raphson
+process when an equation has multiple roots, for example $(x - 1)^3 = 0$.
+[3 marks]
+
+---
+
+**QUESTION 2: Taylor expansions — 15 marks**
+
+Corrugation is a process of bending material into a regular wave pattern which gives it
+greater strength than if a flat sheet is used. To make corrugated cardboard, you need to bend a
+wide flat sheet into waves. The resulting corrugated sheet is then narrower. Corrugations are often
+modelled by smooth waves. In this variant, take
+$y(x) = ${Q2.f}$
+on the interval $[${Q2.A.toFixed(4)}, ${Q2.B.toFixed(4)}]$.
+
+The amount of material required can be calculated by the arc length $l$ of this function $y(x)$
+between two points $a$ and $b$ and is given by
+$l = \\int_a^b \\sqrt{1 + \\left(\\frac{dy}{dx}\\right)^2} dx$,
+assuming the curve is continuous in the region $[a, b]$. As this integral can be difficult to solve
+analytically, it must be approximated. This can be achieved using a Taylor expansion of the
+integrand about the midpoint $x = ${((Q2.A+Q2.B)/2).toFixed(4)}$.
+
+(a) Provide an approximation of the arc length $l$ for the interval $[${Q2.A.toFixed(4)}, ${Q2.B.toFixed(4)}]$
+using a Taylor expansion of order 6 centred about the midpoint. Include a plot of both the Taylor
+approximation and the analytical integrand $I(x) = \\sqrt{1 + \\left(\\frac{dy}{dx}\\right)^2}$.
+[3 marks]
+
+(b) Provide an upper bound of the error for your approximation in part (a), carefully justifying
+all of the steps in your calculation.
+[7 marks]
+
+(c) Provide a further 4 approximations using Taylor expansions of degree 7, 8, 9 and 10,
+and place the results in a table. State, with explanations, the highest decimal place accuracy
+of the solutions.
+[3 marks]
+
+(d) Using the periodicity/structure of $y(x)$ where appropriate, provide an estimate of the integral
+over a larger interval by symmetry/period arguments and verify it numerically with a definite
+integral routine in your chosen tool.
+[2 marks]
+
+---
+
+**QUESTION 3: First-order ODEs — 15 marks**
+
+(a) Describe, with the aid of a sketch or sketches, both the basic and modified Euler's methods for
+solving first-order differential equations of the form $\\frac{dy}{dx} = f(x,y)$, with initial condition $y(x_0)=y_0$.
+Explain why the modified method should provide a more accurate approximation than the basic method.
+[5 marks]
+
+(b) Use the basic Euler's method with a step size $h = 0.05$ to find an estimate of the solution $y$
+when $x = 0.1$ for the differential equation
+${q3eq}.
+[3 marks]
+
+(c) For the same equation and initial condition as part (b), implement 10 steps of size 0.5 for both the
+modified Euler and Runge–Kutta 4th-order methods to find estimates from $y(0)$ to $y(5)$.
+[3 marks]
+
+(d) The true solution (for checking/comparison) is:
+${q3exact}.
+Sketch/plot this function and plot your approximate solutions from part (c) on the same axes.
+Comment on the results.
+[4 marks]
+
+---
+
+**QUESTION 4: Second-order ODEs — 15 marks**
+
+Two touching blocks are positioned on a steel top whose temperature is maintained at 0°C.
+The heat transfer coefficient between the two blocks and between the blocks and the table is $c > 0$.
+Applying the laws of heat conduction, a coupled system of two first-order equations is obtained,
+which can be reduced to the 2nd-order differential equation:
+$\\frac{d^2 y}{dx^2} = -2 c \\frac{dy}{dx} - 0.75 c^2 y$.
+
+For this variant take $c = ${P4.c}$, $y(0) = ${P4.y0}$, $y'(0) = ${P4.v0}$.
+
+(a) State the general form of the modified Euler's method for solving second-order ODEs of this form,
+appropriately defining any functions or variables that you introduce.
+[4 marks]
+
+(b) Use the modified Euler's method to calculate 10 estimates with step size 0.1 and the initial
+conditions as stated above. Clearly display the final estimate of $y(1)$ only.
+[3 marks]
+
+(c) Using the output from part (b), state the interval in which a local maximum is located and explain
+why you selected this interval.
+[2 marks]
+
+(d) The specific solution that satisfies the initial conditions is
+${exactQ4}.
+Verify this by symbolic/numeric means. Now use the derivative of the specific solution along with
+≈5 iterations of a secant (or similar) method, starting with your interval from part (c), to verify a local
+maximum in that interval.
+[6 marks]
+
+---
+
+**QUESTION 5: Presentation — 40 marks**
+
+**Draft (10 marks):** 150–250 words + 1-slide storyboard or figure placeholder.
+Submit 48 hours before your presentation slot.
+*Note: Draft marks are awarded only if you actually present.*
+
+**Presentation (30 marks):** 3 minutes maximum.
+- Display your variant number clearly
+- Present one quantitative result from Q1–Q4
+- Explain your methodology and rationale
+- Include a brief reflection on the problem
+
+**Rubric:**
+- Draft: Structure & focus (3), Mathematical soundness (3), Evidence plan (2), References/tools (2)
+- Presentation: Correctness & insight (12), Method rationale (8), Clarity & structure (5), Visuals (3), Timing & delivery (2)`;
 }
 
-// Generate preview
-function generatePreview() {
-  const variant = document.getElementById('variant').value;
-  if(!variant) {
-    alert('Please select a variant number');
-    return;
+// Generate Chaos & Fractals text (complete version)
+function cfText(variant, student, sid) {
+  const rng = mulberry32(0xBEE5 ^ variant);
+  
+  const xs = pick(rng, pools.cf.x0Choices);
+  let q1desc;
+  if(pick(rng, [true, false])) {
+    const r = pick(rng, pools.cf.rVals);
+    q1desc = `Logistic map $x_{n+1} = r x_n (1 - x_n)$ with $r = ${r}$ and $x_0 \\in \\{${xs.join(', ')}\\}$`;
+  } else {
+    const ab = pick(rng, pools.cf.abCases);
+    q1desc = `Generalised map $x_{n+1} = a x_n (1 - b x_n)$ with $a=${ab.a}$, $b=${ab.b}$ and $x_0 \\in \\{${xs.join(', ')}\\}$`;
   }
   
+  const sTent = pick(rng, pools.cf.tentS);
+  const r2 = pick(rng, pools.cf.rVals);
+  const useTent = pick(rng, [true, false]);
+  
+  let c1 = pick(rng, pools.cf.juliaC);
+  let c2 = pick(rng, pools.cf.juliaC.filter(z => z !== c1));
+
+  return `**DYNAMICAL SYSTEMS, CHAOS & FRACTALS — VARIANT ${variant}**
+**Student:** ${student}
+**ID:** ${sid}
+
+================================================================================
+MARKING: Q1 (15) + Q2 (15) + Q3 (15) + Q4 (15) + Q5 (40) = 100 marks
+================================================================================
+
+**QUESTION 1: One-dimensional maps — 15 marks**
+
+For a one-dimensional real function $f: \\mathbb{R} \\to \\mathbb{R}$, we define an iterative map via $x_{n+1} = f(x_n)$, $n = 0,1,2,\\ldots$
+One such map is
+${q1desc}.
+
+(a) For parameter values $a = b = 0.5$, this model predicts the population eventually reaches zero for all
+$x_0 \\in (0,1)$. Demonstrate this by computing the orbits of $x_n$ for $n = 0..20$ (inclusive), using
+$x_0 = 0.1, 0.3, 0.9$, and plot the results on a single labelled figure.
+[5 marks]
+
+(b) Calculate the number of iterations it takes for the population to drop below $10^{-15}$ when $a = b = 0.5$
+and $x_0 = 0.3$.
+[4 marks]
+
+(c) By plotting appropriate graphs (or otherwise) describe the behaviour for the following parameter values:
+   (i) $a = 1, b = 1$;  (ii) $a = 1.5, b = 0.5$;  (iii) $a = 3.25, b = 1$.  Use $x_0 = 0.1$.
+[6 marks]
+
+---
+
+**QUESTION 2: Fixed and periodic points — 15 marks**
+
+Use the map $f$ specified here and keep it the same for parts (a)–(e):
+${useTent ? `Tent map $f(x) = s \\cdot \\min(x, 1 - x)$ with $s = ${sTent}$` : `Logistic map $f(x) = r x (1 - x)$ with $r = ${r2}$`}.
+
+(a) On the same axes, plot the graphs of $y = f(x)$ and $y = x$ over the relevant domain.
+[2 marks]
+
+(b) Find all fixed points of the map algebraically (or with symbolic algebra). Explain how your plots in (a)
+are consistent with these results.
+[3 marks]
+
+(c) Compute the stability of the fixed points (use $|f'(x^*)|$ to classify attracting/repelling).
+[3 marks]
+
+(d) Find the periodic points up to period 3 and compute their stability.
+[5 marks]
+
+(e) Using your results from (c)–(d), describe the likely long-term behaviour for typical initial conditions;
+no orbit plots are required here.
+[2 marks]
+
+---
+
+**QUESTION 3: Filled Julia sets — 15 marks**
+
+Given $g: \\mathbb{C} \\to \\mathbb{C}$, define $z_{n+1} = g(z_n)$. Let $g(z) = z^2 + c$, with complex $c$.
+
+The filled-in Julia set is the set of all $z_0$ that do not escape to infinity under $g$. It is known that if $|z_n| > 2$
+for any $n$, the orbit escapes (so $z_0$ is not in the filled set). The first $n$ for which this is true is the "escape
+iteration". Lower escape iteration means a quick escape; high or infinite values indicate bounded orbits.
+
+(a) Write a function that computes the escape iteration for a given $z_0$ and $c$. Include a maximum number of
+iterations $n_{\\text{Max}}$, and return $n_{\\text{Max}}$ if $|z_n|$ never exceeds 2.
+[3 marks]
+
+(b) Using your function, produce a plot of the filled Julia set with $c = ${c1}$. Steps:
+   • Generate a $500 \\times 500$ grid of initial points $z_0$ with $\\text{Re}, \\text{Im} \\in [-1,1]$.
+   • Compute escape iteration for each $z_0$ with $n_{\\text{Max}} = 100$ to form a matrix $M$.
+   • Plot a labelled colour image of $M$ and add a colour bar.
+[7 marks]
+
+(c) Repeat for $c = ${c2}$ and create three plots using $n_{\\text{Max}} = 50, 100, 1000$ (as feasible). Comment on the
+differences (connectedness, filaments, etc.).
+[5 marks]
+
+---
+
+**QUESTION 4: Fractal dimension of a crumpled piece of paper — 15 marks**
+
+**Context (read-only).** *A flat sheet of paper is two-dimensional. A solid ball is three-dimensional. But what is the dimension of a crumpled piece of paper? It fills 3D space, but it's mostly empty air. This object is a real-world fractal, and its dimension is typically between 2 and 3. We can estimate this dimension using the scaling law $M \\propto R^D$, where $M$ is the mass of the paper, $R$ is its radius, and $D$ is the fractal dimension we want to find.*
+
+**How to perform the experiment (cohort data collection).**
+**Step 1: Get your materials.** Use several sheets of the **same paper type** but **different sizes** (e.g., A5, A4, A3) or cut squares of different side lengths (e.g., 10 cm, 15 cm, 20 cm, …). You also need a ruler.
+**Step 2: Create the paper balls.** Crumple each sheet into the **tightest ball you can make** with your hands.
+**Step 3: Measure the radius $R$.** For each ball, measure its **diameter in several directions** and take the **average diameter**; the radius is **half** of this average. Record $R$.
+**Step 4: Determine the "mass" $M$.** For standard paper of uniform density, **mass is proportional to area**, so use the sheet's **original area** as its "mass". Example: A4 (21 cm × 29.7 cm) has area 623.7 cm²; A5 is half of that; A3 is double. For squares, $M =$ (side length)². Record $M$.
+**Step 5: Enter your data.** Go to the **Data Analysis Lab** (shared class sheet) and enter your pairs $(R, M)$. Add at least **three points** from your own experiment; you may also use additional points from classmates (pooled dataset).
+
+(a) **Method & log–log plot — 5 marks**
+• Assemble a dataset with **your ≥3 points** plus **≥2 additional cohort points** (≥5 total). Convert units to **$R$ in cm**, **$M$ in cm²** (if you used area).
+• Define $x = \\log R$, $y = \\log M$ and produce a **labelled log–log scatter** (axes, units, caption).
+• Note any obvious outliers and state briefly whether you kept or excluded them (and why).
+**Deliverable (a):** the log–log plot and a 2–3 sentence note on how you measured diameters and computed $M$.
+
+(b) **Estimating $D$ & robustness — 6 marks**
+• Fit the line $y = \\alpha + D x$ to your selected points using least squares; report $\\hat{D}$, $R^2$, and a **95% CI or standard error** for $D$.
+• **Robustness check:** repeat the fit on a **different subset** (e.g., only your points; or exclude the smallest and largest $R$) and comment on any change in $\\hat{D}$.
+• State whether $\\hat{D} \\in (2,3)$ and what that implies physically about how the crumpled ball fills space.
+**Deliverable (b):** a small table (ID/size, $R$, $M$) and the two fitted results with a 1–2 sentence comparison.
+
+(c) **Interpretation — 4 marks**
+In ~150–200 words, interpret your $\\hat{D}$: discuss measurement uncertainty (averaging diameters, non-sphericity), paper/size effects, and why pooling across the cohort helps reveal a clearer scaling law. Keep this focused on the **physics of space-filling**.
+
+**Marking:** (a) Method & plot 5 • (b) Estimation & robustness 6 • (c) Interpretation 4
+**Notes:** Work is individual; the dataset is shared. State any tools you used.
+
+---
+
+**QUESTION 5: Presentation — 40 marks**
+
+**Draft (10 marks):** 150–250 words + 1-slide storyboard or figure placeholder.
+Submit 48 hours before your presentation slot.
+*Note: Draft marks are awarded only if you actually present.*
+
+**Presentation (30 marks):** 3 minutes maximum.
+- Display your variant number clearly
+- Present one quantitative result from Q1–Q4
+- Explain your methodology and rationale
+- Include a brief reflection on the problem
+
+**Rubric:**
+- Draft: Structure & focus (3), Mathematical soundness (3), Evidence plan (2), References/tools (2)
+- Presentation: Correctness & insight (12), Method rationale (8), Clarity & structure (5), Visuals (3), Timing & delivery (2)`;
+}
+
+// Generate preview with math rendering
+function generatePreview() {
   const student = document.getElementById('student').value;
   const sid = document.getElementById('sid').value;
   
-  const text = generateText(parseInt(variant), student, sid);
-  document.getElementById('preview').textContent = text;
-  document.getElementById('status').innerHTML = '<div class="status">✓ Preview generated successfully</div>';
+  if(!student || !sid) {
+    alert('Please enter both student name and ID');
+    return;
+  }
+  
+  // Calculate variant from ID
+  const digits = sid.replace(/\D/g, '');
+  let variant;
+  if(digits.length >= 6) {
+    const last6 = parseInt(digits.slice(-6), 10);
+    variant = 1 + (last6 % 30);
+  } else {
+    variant = parseInt(document.getElementById('variant').value) || 1;
+  }
+  
+  const text = currentCourse === 'nm' ? nmText(variant, student, sid) : cfText(variant, student, sid);
+  const preview = document.getElementById('preview');
+  
+  // Convert markdown bold to HTML and add line breaks
+  const htmlText = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+  
+  preview.innerHTML = htmlText;
+  
+  // Render math with KaTeX
+  renderMathInElement(preview, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+  
+  document.getElementById('status').innerHTML = `<div class="status">✓ Preview ready for ${student} - Variant ${variant}</div>`;
+}
+
+// Helper to convert LaTeX to plain text for PDF
+function latexToPlain(text) {
+  return text
+    .replace(/\$([^$]+)\$/g, '$1')
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+    .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+    .replace(/\\mathbb\{R\}/g, 'ℝ')
+    .replace(/\\mathbb\{C\}/g, 'ℂ')
+    .replace(/\\text\{([^}]+)\}/g, '$1')
+    .replace(/\\cdot/g, '·')
+    .replace(/\\times/g, '×')
+    .replace(/\\sin/g, 'sin')
+    .replace(/\\cos/g, 'cos')
+    .replace(/\\ln/g, 'ln')
+    .replace(/\\log/g, 'log')
+    .replace(/\\min/g, 'min')
+    .replace(/\\max/g, 'max')
+    .replace(/\\pi/g, 'π')
+    .replace(/\\alpha/g, 'α')
+    .replace(/\\beta/g, 'β')
+    .replace(/\\gamma/g, 'γ')
+    .replace(/\\delta/g, 'δ')
+    .replace(/\\eta/g, 'η')
+    .replace(/\\lambda/g, 'λ')
+    .replace(/\\omega/g, 'ω')
+    .replace(/\\varepsilon/g, 'ε')
+    .replace(/\\Delta/g, 'Δ')
+    .replace(/\\Rightarrow/g, '⇒')
+    .replace(/\\to/g, '→')
+    .replace(/\\infty/g, '∞')
+    .replace(/\\lim/g, 'lim')
+    .replace(/\\sum/g, 'Σ')
+    .replace(/\\ldots/g, '...')
+    .replace(/\\int/g, '∫')
+    .replace(/\\left\(/g, '(')
+    .replace(/\\right\)/g, ')')
+    .replace(/\\approx/g, '≈')
+    .replace(/\\in/g, '∈')
+    .replace(/\\propto/g, '∝')
+    .replace(/\^{([^}]+)}/g, '^$1')
+    .replace(/_{([^}]+)}/g, '_$1')
+    .replace(/\{([^}]+)\}/g, '$1')
+    .replace(/\\\{/g, '{')
+    .replace(/\\\}/g, '}')
+    .replace(/\\\\/g, '\\')
+    .replace(/\*\*(.*?)\*\*/g, '$1');
 }
 
 // Download PDF
 function downloadPDF() {
-  const variant = document.getElementById('variant').value;
-  if(!variant) {
-    alert('Please select a variant number first');
+  const student = document.getElementById('student').value;
+  const sid = document.getElementById('sid').value;
+  
+  if(!student || !sid) {
+    alert('Please enter both student name and ID');
     return;
   }
   
-  const student = document.getElementById('student').value || 'student';
-  const sid = document.getElementById('sid').value;
-  const text = generateText(parseInt(variant), student, sid);
+  // Calculate variant
+  const digits = sid.replace(/\D/g, '');
+  let variant;
+  if(digits.length >= 6) {
+    const last6 = parseInt(digits.slice(-6), 10);
+    variant = 1 + (last6 % 30);
+  } else {
+    variant = parseInt(document.getElementById('variant').value) || 1;
+  }
+  
+  const text = currentCourse === 'nm' ? nmText(variant, student, sid) : cfText(variant, student, sid);
+  const plainText = latexToPlain(text);
   
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   
-  doc.setFontSize(11);
-  const lines = doc.splitTextToSize(text, 170);
+  // Add header
+  doc.setFontSize(14);
+  doc.setFont(undefined, 'bold');
+  const title = currentCourse === 'nm' ? 'NUMERICAL METHODS' : 'DYNAMICAL SYSTEMS, CHAOS & FRACTALS';
+  doc.text(`${title} - VARIANT ${variant}`, 105, 20, { align: 'center' });
   
-  let y = 20;
+  doc.setFontSize(11);
+  doc.setFont(undefined, 'normal');
+  doc.text(`Student: ${student}`, 20, 30);
+  doc.text(`ID: ${sid}`, 20, 36);
+  
+  doc.line(20, 40, 190, 40);
+  
+  // Add content
+  const lines = doc.splitTextToSize(plainText, 170);
+  let y = 50;
+  
   for(const line of lines) {
     if(y > 270) {
       doc.addPage();
@@ -406,11 +713,70 @@ function downloadPDF() {
     y += 5;
   }
   
+  // Generate filename based on student ID (last 6 digits)
+  const last6 = digits.slice(-6) || 'unknown';
   const courseName = currentCourse === 'nm' ? 'NM' : 'CF';
-  const fileName = `${courseName}_variant${variant}_${student.toLowerCase().replace(/\s+/g, '_')}.pdf`;
-  doc.save(fileName);
+  const fileName = `${courseName}_21111${last6}.pdf`;
   
-  document.getElementById('status').innerHTML = '<div class="status">✓ PDF downloaded successfully</div>';
+  doc.save(fileName);
+  document.getElementById('status').innerHTML = `<div class="status">✓ PDF saved as ${fileName}</div>`;
+}
+
+// Batch generation
+function generateAllPDFs(course) {
+  if(!confirm(`This will generate 30 PDF files for ${course === 'nm' ? 'Numerical Methods' : 'Chaos & Fractals'}. Continue?`)) {
+    return;
+  }
+  
+  const testName = prompt('Enter a test student name for all PDFs:', 'Test Student');
+  if(!testName) return;
+  
+  // Generate PDFs for each variant
+  for(let v = 1; v <= 30; v++) {
+    // Create a fake student ID that generates this variant
+    // We need last6 such that (last6 % 30) + 1 = v
+    // So last6 = v - 1 (for simplicity, we can use 000000 + (v-1))
+    const last6 = String(v - 1).padStart(6, '0');
+    const sid = `21111${last6}`;
+    
+    const text = course === 'nm' ? nmText(v, testName, sid) : cfText(v, testName, sid);
+    const plainText = latexToPlain(text);
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Add header
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    const title = course === 'nm' ? 'NUMERICAL METHODS' : 'DYNAMICAL SYSTEMS, CHAOS & FRACTALS';
+    doc.text(`${title} - VARIANT ${v}`, 105, 20, { align: 'center' });
+    
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Student: ${testName}`, 20, 30);
+    doc.text(`ID: ${sid}`, 20, 36);
+    
+    doc.line(20, 40, 190, 40);
+    
+    // Add content
+    const lines = doc.splitTextToSize(plainText, 170);
+    let y = 50;
+    
+    for(const line of lines) {
+      if(y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(line, 20, y);
+      y += 5;
+    }
+    
+    const courseName = course === 'nm' ? 'NM' : 'CF';
+    const fileName = `${courseName}_variant${v}.pdf`;
+    doc.save(fileName);
+  }
+  
+  alert('All 30 PDFs generated successfully!');
 }
 </script>
 
