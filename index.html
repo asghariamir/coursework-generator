@@ -416,77 +416,115 @@ function generateNMLaTeX(variant, student, sid){
   return L.join('\n');
 }
 
-function generateCFLaTeX(variant, student, sid){
+function generateCFLaTeX(variant, student, sid) {
   const rng = mulberry32(0xBEE5 ^ variant);
 
-  // Q1: parameterised logistic with (a,b)
+  // Q1 map (parameterised) + initial seeds
   const xs = pick(rng, pools.cf.x0Choices);
   const xsStr = xs.join(', ');
-  const abTriples = pools.cf.abCases; // fixed set for (c)
-  // For text in (a)–(b) we use a=b=0.5 as in spec
-  const tentS = pick(rng, pools.cf.tentS);
-  const c1 = pick(rng, pools.cf.juliaC);
-  const c2 = pick(rng, pools.cf.juliaC.filter(z => z!==c1));
+  const ab = pick(rng, pools.cf.abCases);
+  const mapQ1 = 'x_{n+1} = ' + ab.a + ' \\; x_n (1 - ' + ab.b + ' \\; x_n),\\quad x_0 \\in \\{' + xsStr + '\\}';
 
-  const L = [];
-  L.push(`\\documentclass[11pt,a4paper]{article}`);
-  L.push(`\\usepackage[margin=2.5cm]{geometry}`);
-  L.push(`\\usepackage{amsmath,amssymb,amsthm}`);
-  L.push(`\\usepackage{graphicx}`);
-  L.push(`\\usepackage{enumitem}`);
-  L.push(`\\usepackage{fancyhdr}`);
-  L.push(`\\pagestyle{fancy}\\fancyhf{}\\lhead{\\textbf{DYNAMICAL SYSTEMS, CHAOS \\& FRACTALS}}\\rhead{\\textbf{VARIANT ${variant}}}\\cfoot{\\thepage}`);
-  L.push(`\\begin{document}`);
-  L.push(`\\begin{center}{\\LARGE\\textbf{DYNAMICAL SYSTEMS, CHAOS \\& FRACTALS}}\\\\[0.5em]{\\Large\\textbf{VARIANT ${variant}}}\\\\[1em]{\\large Student: ${student}}\\\\{\\large ID: ${sid}}\\\\[0.5em]\\rule{\\textwidth}{0.4pt}\\end{center}`);
-  L.push(`\\vspace{0.7em}\\noindent\\textbf{Marking:} Q1 (15) + Q2 (15) + Q3 (15) + Q4 (15) + Q5 (40) = 100 marks`);
+  // Q2: tent map on [0,1]
+  const sTent = pick(rng, pools.cf.tentS);
+  const mapQ2 = 'f(x) = ' + sTent + ' \\cdot \\min(x,\\,1-x),\\quad x \\in [0,1]';
+
+  // Q3: Julia parameters
+  const c1 = pick(rng, pools.cf.juliaC);
+  const c2 = pick(rng, pools.cf.juliaC.filter(c => c !== c1));
+
+  let latex = '';
+  latex += '\\documentclass[11pt,a4paper]{article}\\n';
+  latex += '\\usepackage[margin=2.5cm]{geometry}\\n';
+  latex += '\\usepackage{amsmath,amssymb,amsthm}\\n';
+  latex += '\\usepackage{graphicx}\\n';
+  latex += '\\usepackage{enumitem}\\n';
+  latex += '\\usepackage{fancyhdr}\\n\\n';
+  latex += '\\pagestyle{fancy}\\n';
+  latex += '\\fancyhf{}\\n';
+  latex += '\\lhead{\\textbf{DYNAMICAL SYSTEMS, CHAOS \\& FRACTALS}}\\n';
+  latex += '\\rhead{\\textbf{VARIANT ' + variant + '}}\\n';
+  latex += '\\cfoot{\\thepage}\\n';
+  latex += '\\renewcommand{\\headrulewidth}{0.4pt}\\n';
+  latex += '\\thispagestyle{empty}\\n\\n';
+  latex += '\\begin{document}\\n\\n';
+  latex += '\\begin{center}\\n';
+  latex += '{\\LARGE \\textbf{DYNAMICAL SYSTEMS, CHAOS \\& FRACTALS}}\\\\[0.5em]\\n';
+  latex += '{\\Large \\textbf{VARIANT ' + variant + '}}\\\\[1em]\\n';
+  latex += '{\\large Student: ' + student + '}\\\\\\n';
+  latex += '{\\large ID: ' + sid + '}\\\\[0.5em]\\n';
+  latex += '\\rule{\\textwidth}{0.4pt}\\n';
+  latex += '\\end{center}\\n\\n';
+  latex += '\\vspace{1em}\\n';
+  latex += '\\noindent\\textbf{Marking:} Q1 (15) + Q2 (15) + Q3 (15) + Q4 (15) + Q5 (40) = 100 marks\\n\\n';
 
   // Q1
-  L.push(`\\section*{Question 1: One-dimensional maps — 15 marks}`);
-  L.push(`Consider the map \\(x_{n+1}=a\\,x_n(1-b\\,x_n)\\), with $x_0\\in\\{${xsStr}\\}$.`);
-  L.push(`\\begin{enumerate}[label=(\\alph*)]`);
-  L.push(`\\item For $a=b=0.5$, show the orbit tends to zero for all $x_0\\in(0,1)$ by computing $x_n$ for $n=0,\\dots,20$ using $x_0=0.1,0.3,0.9$; plot the three orbits on one labelled figure.\\hfill [5]`);
-  L.push(`\\item For $a=b=0.5$ and $x_0=0.3$, find how many iterations are needed so that $x_n<10^{-15}$.\\hfill [4]`);
-  L.push(`\\item By plotting/analysis, describe the behaviour for the following parameter pairs (use $x_0=0.1$): (i) $a=1,\\,b=1$; (ii) $a=1.5,\\,b=0.5$; (iii) $a=3.25,\\,b=1$.\\hfill [6]`);
-  L.push(`\\end{enumerate}`);
+  latex += '\\section*{Question 1: One-dimensional maps — 15 marks}\\n\\n';
+  latex += 'For a one-dimensional real function $f:\\,\\mathbb{R}\\to\\mathbb{R}$, define $x_{n+1}=f(x_n)$, $n=0,1,2,\\ldots$\\n\\n';
+  latex += 'One such map is\\n';
+  latex += '\\\\[2pt]\\[ ' + mapQ1 + ' \\]\\n\\n';
+  latex += '\\begin{enumerate}[label=(\\alph*)]\\n';
+  latex += '\\item For $a=b=0.5$, show the orbit reaches zero for all $x_0\\in(0,1)$. Compute $x_n$ for $n=0..20$ with $x_0=0.1,0.3,0.9$, and plot them on a single labelled figure.\\hfill [5]\\n\\n';
+  latex += '\\item For $a=b=0.5$ and $x_0=0.3$, compute the number of iterations until $x_n<10^{-15}$.\\hfill [4]\\n\\n';
+  latex += '\\item Using orbit/cobweb/derivative tests as appropriate, describe behaviour for (i) $a=1,b=1$; (ii) $a=1.5,b=0.5$; (iii) $a=3.25,b=1$ with $x_0=0.1$.\\hfill [6]\\n';
+  latex += '\\end{enumerate}\\n\\n';
 
-  // Q2 (tent map, explicit domain)
-  L.push(`\\section*{Question 2: Fixed and periodic points — 15 marks}`);
-  L.push(`Use the \\emph{tent map} on \\([0,1]\\): \\[ f(x)= ${tentS}\\,\\min(x,1-x),\\qquad x\\in[0,1]. \\] Keep the same $f$ in all parts.`);
-  L.push(`\\begin{enumerate}[label=(\\alph*)]`);
-  L.push(`\\item On the same axes, plot $y=f(x)$ and $y=x$ over $[0,1]$.\\hfill [2]`);
-  L.push(`\\item Find all fixed points algebraically and explain how (a) is consistent.\\hfill [3]`);
-  L.push(`\\item Classify the fixed points using $|f'(x^*)|$ (attracting/repelling).\\hfill [3]`);
-  L.push(`\\item Find periodic points up to period 3 and compute their stability.\\hfill [5]`);
-  L.push(`\\item Using (c)–(d), describe the likely long-term behaviour for typical initial conditions.\\hfill [2]`);
-  L.push(`\\end{enumerate}`);
+  // Q2 (tent map)
+  latex += '\\section*{Question 2: Fixed/periodic points for the tent map — 15 marks}\\n\\n';
+  latex += 'Use the tent map on $[0,1]$: \\\\[2pt]\\[ ' + mapQ2 + ' \\]\\n\\n';
+  latex += '\\begin{enumerate}[label=(\\alph*)]\\n';
+  latex += '\\item Plot $y=f(x)$ and $y=x$ on $[0,1]$.\\hfill [2]\\n\\n';
+  latex += '\\item Find all fixed points algebraically and relate to the plot.\\hfill [3]\\n\\n';
+  latex += '\\item Classify stability using $|f\'(x^*)|$.\\hfill [3]\\n\\n';
+  latex += '\\item Find periodic points up to period 3 and classify their stability.\\hfill [5]\\n\\n';
+  latex += '\\item Using (c)–(d), describe likely long-term behaviour for typical $x_0$.\\hfill [2]\\n';
+  latex += '\\end{enumerate}\\n\\n';
 
-  // Q3 Julia
-  L.push(`\\section*{Question 3: Filled Julia sets — 15 marks}`);
-  L.push(`Let $g(z)=z^2+c$ and define $z_{n+1}=g(z_n)$. If $|z_n|>2$ for some $n$, the orbit escapes; the first such $n$ is the \\emph{escape iteration}.`);
-  L.push(`\\begin{enumerate}[label=(\\alph*)]`);
-  L.push(`\\item Write a function that computes the escape iteration for given $z_0$ and $c$, with maximum $n_{\\text{max}}$ (return $n_{\\text{max}}$ if no escape).\\hfill [3]`);
-  L.push(`\\item Plot the filled Julia set for $c=${c1}$ using a $500\\times 500$ grid on $[-1,1]\\times[-1,1]$ and $n_{\\text{max}}=100$ (colour by escape iteration, with colour bar).\\hfill [7]`);
-  L.push(`\\item Repeat for $c=${c2}$ with $n_{\\text{max}}=50,100,1000$; comment on differences (connectedness, filaments, etc.).\\hfill [5]`);
-  L.push(`\\end{enumerate}`);
+  // Q3 (Julia)
+  latex += '\\section*{Question 3: Filled Julia sets — 15 marks}\\n\\n';
+  latex += 'Let $g(z)=z^2+c$. The ``escape iteration\'\' is the first $n$ with $|z_n|>2$; if none $\\le n_{\\text{Max}}$, return $n_{\\text{Max}}$.\\n\\n';
+  latex += '\\begin{enumerate}[label=(\\alph*)]\\n';
+  latex += '\\item Write a function to compute escape iteration for given $z_0,c$ (with $n_{\\text{Max}}$).\\hfill [3]\\n\\n';
+  latex += '\\item Plot the filled Julia set for $c=' + c1 + '$ using a $500\\times 500$ grid on $[-1,1]\\times[-1,1]$ with $n_{\\text{Max}}=100$; show a labelled colour image and a colour bar.\\hfill [7]\\n\\n';
+  latex += '\\item Repeat for $c=' + c2 + '$ with $n_{\\text{Max}}=50,100,1000$ (as feasible). Comment on connectedness/filaments, etc.\\hfill [5]\\n';
+  latex += '\\end{enumerate}\\n\\n';
 
-  // Q4 Crumpled paper (stats section unchanged)
-  L.push(`\\section*{Question 4: Fractal dimension of a crumpled piece of paper — 15 marks}`);
-  L.push(`\\textbf{Context.} A flat sheet has dimension 2; a solid ball has dimension 3. A crumpled paper ball fills space sparsely and typically has a fractal dimension between 2 and 3, with scaling $M\\propto R^D$ (area proxy for mass $M$, radius $R$).`);
-  L.push(`\\textbf{Cohort data collection.} Use identical paper type with several sizes; crumple tightly; measure average diameter (compute $R$); take sheet area as $M$; add $(R,M)$ to the shared “Data Analysis Lab” sheet (see course link).`);
-  L.push(`\\begin{enumerate}[label=(\\alph*)]`);
-  L.push(`\\item \\textbf{Method \\& log–log plot} (≥5 points: ≥3 yours + ≥2 cohort). Convert units (cm, cm$^2$). Let $x=\\log R$, $y=\\log M$; produce a labelled log–log scatter; note any outliers and whether kept/excluded.\\hfill [5]`);
-  L.push(`\\item \\textbf{Estimating $D$ \\& robustness.} Fit $y=\\alpha + D x$ by least squares; report $\\hat D$, $R^2$, and a 95\\% CI or SE for $D$. Repeat on a different subset (e.g., your points only or trimming extremes) and compare. State whether $\\hat D\\in(2,3)$ and what that implies physically.\\hfill [6]`);
-  L.push(`\\item \\textbf{Interpretation.} In 150–200 words, discuss measurement uncertainty (diameter averaging, non-sphericity), paper/size effects, and why pooling helps reveal the scaling law.\\hfill [4]`);
-  L.push(`\\end{enumerate}`);
+  // Q4 (reworked: ≥10 points, minimal statistics)
+  latex += '\\section*{Question 4: Fractal dimension of a crumpled sheet — 15 marks}\\n\\n';
+  latex += '\\textbf{Context.} A crumpled paper ball is a real-world fractal with $2<D<3$. Use the scaling law $M\\propto R^D$, where $M$ is proportional to the original sheet area and $R$ is the ball radius.\\n\\n';
+  latex += '\\textbf{Cohort data collection.}\\n';
+  latex += '\\begin{itemize}\\setlength\\itemsep{0.2em}\\n';
+  latex += '\\item Use identical paper type; prepare several sizes (A5/A4/A3 or squares).\\n';
+  latex += '\\item Measure multiple diameters for each ball; take the average, then $R=\\tfrac{1}{2}\\,\\text{(avg diameter)}$.\\n';
+  latex += '\\item Take $M$ as the sheet area (proportional to mass for uniform paper).\\n';
+  latex += '\\item Enter your pairs $(R,M)$ in the shared \\emph{Data Analysis Lab} (class sheet; link provided in VLE).\\n';
+  latex += '\\end{itemize}\\n\\n';
+
+  latex += '\\begin{enumerate}[label=(\\alph*)]\\n';
+  latex += '\\item \\textbf{Data \\& log–log plot — 5 marks}\\n';
+  latex += 'Assemble a dataset with at least \\textbf{10} points (\\(\\ge\\!3\\) your own plus cohort points). Convert units to $R$ in cm and $M$ in cm$^2$. Define $x=\\log R$, $y=\\log M$, make a clearly labelled log–log scatter, and briefly note any obvious outliers (and whether you excluded them).\\hfill [5]\\n\\n';
+
+  latex += '\\item \\textbf{Estimating $D$ (minimal statistics) — 7 marks}\\n';
+  latex += 'Fit the straight line $y=\\alpha+Dx$ by least squares. Report (i) the slope $\\hat D$ and (ii) the coefficient of determination $R^2$. Also report a \\textbf{standard error} for $\\hat D$ using\\\\[2pt]';
+  latex += '\\[ s_{\\hat D}=\\sqrt{\\,\\hat\\sigma^2/S_{xx}\\,},\\quad S_{xx}=\\sum (x_i-\\bar x)^2,\\; \\hat\\sigma^2=\\frac{1}{n-2}\\sum (y_i-\\hat\\alpha-\\hat D x_i)^2. \\]';
+  latex += 'Do a light robustness check: repeat the fit after removing the smallest and largest $R$ (or only your own points) and comment on any change in $\\hat D$. State whether $\\hat D\\in(2,3)$ and what that implies physically.\\hfill [7]\\n\\n';
+
+  latex += '\\item \\textbf{Interpretation — 3 marks}\\n';
+  latex += 'In 120–180 words, interpret your estimate: measurement uncertainty (diameter averaging, non-sphericity), paper/size effects, and how pooling improves the scaling signal. Keep the focus on space-filling.\\hfill [3]\\n';
+  latex += '\\end{enumerate}\\n\\n';
 
   // Q5
-  L.push(`\\section*{Question 5: Presentation — 40 marks}`);
-  L.push(`\\textbf{Draft (10):} 150–250 words + 1-slide storyboard (due 48h before slot; awarded only if you present).`);
-  L.push(`\\textbf{Presentation (30):} Max 3 minutes. Show variant; one quantitative result from Q1–Q4; method/rationale; reflection. \\textbf{Rubric:} Draft (3,3,2,2); Presentation (12,8,5,3,2).`);
-  L.push(`\\end{document}`);
+  latex += '\\section*{Question 5: Presentation — 40 marks}\\n\\n';
+  latex += '\\textbf{Draft (10):} 150–250 words + 1-slide storyboard/figure placeholder (due 48h before your slot; draft marks awarded only if you present).\\\\\\n';
+  latex += '\\textbf{Presentation (30):} 3 minutes max. Show your variant number, one quantitative result from Q1–Q4, explain method/rationale, and add a brief reflection.\\\\[2pt]\\n';
+  latex += '\\textbf{Rubric:} Draft — Structure\\&focus (3), Mathematical soundness (3), Evidence plan (2), References/tools (2). ';
+  latex += 'Presentation — Correctness\\&insight (12), Method rationale (8), Clarity\\&structure (5), Visuals (3), Timing\\&delivery (2).\\n\\n';
 
-  return L.join('\n');
+  latex += '\\end{document}';
+  return latex;
 }
+
+
 
 // ===== Generation actions =====
 function generateIndividual(){
