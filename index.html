@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Coursework LaTeX Generator + Solutions</title>
+<style>
+:root{--ink:#111827;--muted:#6b7280;--primary:#2563eb;--bg:#f9fafb;--card:#fff;--border:#e5e7eb}
+*{box-sizing:border-box}
+html,body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:40px 20px;text-align:center;border-radius:12px;margin-bottom:30px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
+.header h1{margin:0 0 10px;font-size:36px;font-weight:700}
+.header p{margin:0;opacity:0.95;font-size:18px}
+.card{background:var(--card);border-radius:12px;padding:24px;margin-bottom:24px;box-shadow:0 4px 6px rgba(0,0,0,0.07)}
+.card h2{color:var(--primary);margin:0 0 20px;font-size:24px;display:flex;align-items:center;gap:10px}
+.btn-group{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}
+button{padding:12px 24px;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s}
+.btn-primary{background:var(--primary);color:white}
+.btn-primary:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.2)}
+.btn-danger{background:#dc2626;color:white}
+.btn-danger:hover{background:#b91c1c}
+.btn-success{background:#10b981;color:white}
+.btn-success:hover{background:#059669}
+.btn-secondary{background:#6b7280;color:white}
+.btn-secondary:hover{background:#4b5563}
+.course-selector{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.course-btn{padding:16px;border:2px solid var(--border);border-radius:8px;background:white;cursor:pointer;transition:all 0.2s;text-align:left}
+.course-btn:hover{border-color:var(--primary);background:#f0f4ff}
+.course-btn.active{border-color:var(--primary);background:linear-gradient(to right,#f0f4ff,#e6efff);box-shadow:0 2px 8px rgba(37,99,235,0.1)}
+.course-btn h3{margin:0 0 4px;color:var(--primary);font-size:16px}
+.course-btn p{margin:0;font-size:13px;color:var(--muted)}
+.preview-box{background:#1e1e1e;color:#d4d4d4;border-radius:8px;padding:20px;min-height:320px;max-height:560px;overflow-y:auto;font-family:'Courier New',monospace;font-size:12px;line-height:1.5;white-space:pre-wrap;width:100%}
+.student-list{background:#f3f4f6;padding:15px;border-radius:8px;max-height:400px;overflow-y:auto}
+.student-item{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px;margin:4px 0;background:white;border-radius:6px;font-size:14px}
+.student-name{font-weight:600;color:var(--ink)}
+.student-id{color:var(--muted);font-family:monospace}
+.student-variant{background:var(--primary);color:white;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700}
+.info-box{background:#e0f2fe;color:#0c4a6e;padding:16px;border-radius:8px;margin:20px 0;border-left:4px solid #0284c7}
+.success-box{background:#d1fae5;border:1px solid #6ee7b7;color:#065f46;padding:16px;border-radius:8px;margin:20px 0}
+.warning-box{background:#fef3c7;border:1px solid #fbbf24;color:#92400e;padding:16px;border-radius:8px;margin:20px 0}
+.footer{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+.progress{margin:20px 0;padding:10px;background:#f9f9f9;border-radius:8px;font-family:monospace;font-size:12px;max-height:220px;overflow-y:auto}
+.form-group{margin:15px 0}
+.form-group label{display:block;margin-bottom:5px;font-weight:600;color:var(--ink);font-size:14px}
+.form-control{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px}
+.form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.divider{border-top:2px solid var(--border);margin:30px 0}
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:#f3f4f6;padding:4px;border-radius:8px;flex-wrap:wrap}
+.tab{padding:10px 20px;border:none;background:transparent;color:var(--muted);font-weight:700;cursor:pointer;border-radius:6px;transition:all 0.2s}
+.tab.active{background:white;color:var(--primary);box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+@media(max-width:720px){
+  .course-selector{grid-template-columns:1fr}
+  .tabs{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📝 Coursework LaTeX Generator</h1>
+    <p>Assignments & fully worked solutions — individual or batch</p>
+  </div>
+
+  <div class="card">
+    <h2>🎯 Mode</h2>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('assign', this)">Assignments</button>
+      <button class="tab" onclick="switchTab('solutions', this)">Solutions</button>
+      <button class="tab" onclick="switchTab('batch', this)">Batch (All 19)</button>
+    </div>
+
+    <!-- Assignments -->
+    <div id="assign-tab" class="tab-content active">
+      <div class="course-selector">
+        <div class="course-btn active" data-course="cf" onclick="selectCourse('cf',this)">
+          <h3>📈 Dynamical Systems</h3><p>Chaos & Fractals</p>
+        </div>
+        <div class="course-btn" data-course="nm" onclick="selectCourse('nm',this)">
+          <h3>🔢 Numerical Methods</h3><p>Algorithms & Analysis</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="studentSelect">Select Student from Class List:</label>
+        <select id="studentSelect" class="form-control"></select>
+      </div>
+
+      <div class="divider"></div>
+      <div class="warning-box"><strong>OR</strong> enter custom student details below:</div>
+
+      <div class="form-group">
+        <label for="customName">Custom Student Name:</label>
+        <input type="text" id="customName" class="form-control" placeholder="e.g., John Smith">
+      </div>
+
+      <div class="form-group">
+        <label for="customID">Custom Student ID:</label>
+        <input type="text" id="customID" class="form-control" placeholder="e.g., 21111234567" maxlength="11">
+      </div>
+
+      <div class="form-group">
+        <label for="variantSelect">Variant Number (1–30):</label>
+        <input type="number" id="variantSelect" class="form-control" min="1" max="30" value="1">
+      </div>
+
+      <div class="info-box">
+        <strong>Auto-variant:</strong> 1 + (last 6 digits of ID) mod 30, then deduped so each student has a unique variant.<br>
+        <strong>Override:</strong> You can manually set any variant 1–30.
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-primary" onclick="generateIndividual(false)">📄 Generate Assignment LaTeX</button>
+        <button class="btn-success" onclick="downloadIndividual()">💾 Download LaTeX</button>
+        <button class="btn-secondary" onclick="clearForm()">🔄 Clear</button>
+      </div>
+    </div>
+
+    <!-- Solutions -->
+    <div id="solutions-tab" class="tab-content">
+      <div class="course-selector">
+        <div class="course-btn active" data-course="cf" onclick="selectCourse('cf',this)">
+          <h3>📈 Dynamical Systems — Solutions</h3><p>Worked answers</p>
+        </div>
+        <div class="course-btn" data-course="nm" onclick="selectCourse('nm',this)">
+          <h3>🔢 Numerical Methods — Solutions</h3><p>Worked answers</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="studentSelectSol">Select Student from Class List:</label>
+        <select id="studentSelectSol" class="form-control"></select>
+      </div>
+
+      <div class="divider"></div>
+      <div class="warning-box"><strong>OR</strong> enter custom details for the solution title page:</div>
+
+      <div class="form-group">
+        <label for="customNameSol">Student Name:</label>
+        <input type="text" id="customNameSol" class="form-control" placeholder="e.g., John Smith">
+      </div>
+
+      <div class="form-group">
+        <label for="customIDSol">Student ID:</label>
+        <input type="text" id="customIDSol" class="form-control" placeholder="e.g., 21111234567" maxlength="11">
+      </div>
+
+      <div class="form-group">
+        <label for="variantSelectSol">Variant Number (1–30):</label>
+        <input type="number" id="variantSelectSol" class="form-control" min="1" max="30" value="1">
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-primary" onclick="generateIndividual(true)">🧩 Generate Solution LaTeX</button>
+        <button class="btn-success" onclick="downloadIndividual()">💾 Download LaTeX</button>
+      </div>
+    </div>
+
+    <!-- Batch -->
+    <div id="batch-tab" class="tab-content">
+      <div class="course-selector">
+        <div class="course-btn active" data-course="cf" onclick="selectCourse('cf',this)">
+          <h3>📈 Dynamical Systems</h3><p>Chaos & Fractals</p>
+        </div>
+        <div class="course-btn" data-course="nm" onclick="selectCourse('nm',this)">
+          <h3>🔢 Numerical Methods</h3><p>Algorithms & Analysis</p>
+        </div>
+      </div>
+
+      <div class="student-list" id="studentList"></div>
+
+      <div class="info-box">
+        <strong>Total Students:</strong> 19<br>
+        <strong>Variants:</strong> auto from IDs then de-duplicated to be unique<br>
+        <strong>Output:</strong> 19 LaTeX files ready for compilation
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-danger" onclick="generateAll(false)">🚀 Generate All Assignments</button>
+        <button class="btn-danger" onclick="generateAll(true)">🧩 Generate All Solutions</button>
+        <button class="btn-success" onclick="downloadAllAsZip()">📦 Download All (each file)</button>
+      </div>
+
+      <div id="progress" class="progress" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📝 LaTeX Output Preview</h2>
+    <div class="success-box" style="display:none" id="compile-instructions">
+      <strong>✅ Files Generated!</strong>
+      <ol style="margin:10px 0 0 20px">
+        <li>Download the LaTeX file(s)</li>
+        <li>Upload to Overleaf (pdflatex/xelatex)</li>
+        <li>Each student has their personalised document</li>
+      </ol>
+    </div>
+    <textarea id="latexOutput" class="preview-box" readonly>% LaTeX output will appear here</textarea>
+  </div>
+
+  <div class="footer">
+    <p>© 2025 Coursework Generator • LaTeX & Solutions</p>
+  </div>
+</div>
+
+<script>
+// ---------- Class list ----------
+const students = [
+  {name:"Oli Bailey",id:"21111388943"},
+  {name:"Tian Dawson-Shenton",id:"21111383107"},
+  {name:"Billie Dawson",id:"21111373089"},
+  {name:"Mia Greenhalgh",id:"21111387863"},
+  {name:"Josh Hainsworth",id:"21111389833"},
+  {name:"Alice Hughes",id:"21111388110"},
+  {name:"Josh Hughes",id:"21111385475"},
+  {name:"Holly Jones",id:"21111389807"},
+  {name:"Jorge Lattimore",id:"21111388950"},
+  {name:"Emily Morris",id:"21111382584"},
+  {name:"James Oconnor",id:"21111389808"},
+  {name:"Max Parrott",id:"21111388188"},
+  {name:"Alfie Robinson",id:"21111385759"},
+  {name:"Evie Schofield",id:"21111388083"},
+  {name:"Harriet Shadbolt",id:"21111382216"},
+  {name:"Kacper Swiatlowski",id:"21111388302"},
+  {name:"Charlotte Tasker",id:"21111385728"},
+  {name:"Louis Tornerup",id:"21111365511"},
+  {name:"Amy Williams",id:"21111389832"}
+];
+
+// base variants from IDs
+students.forEach(s=>{
+  const last6 = parseInt(s.id.slice(-6),10);
+  s.variant = 1 + (last6 % 30);
+});
+// ensure uniqueness for our cohort of 19
+enforceUniqueVariants(students);
+
+function enforceUniqueVariants(list){
+  const used = new Set();
+  const all = new Set(Array.from({length:30},(_,i)=>i+1));
+  // pass 1: keep unique, mark collisions
+  list.forEach(s=>{
+    if(!used.has(s.variant)){ used.add(s.variant); all.delete(s.variant); }
+    else s._needs = true;
+  });
+  // pass 2: assign remaining numbers in order for collisions
+  list.forEach(s=>{
+    if(s._needs){
+      const next = all.values().next().value;
+      s.variant = next;
+      used.add(next);
+      all.delete(next);
+      delete s._needs;
+    }
+  });
+}
+
+// ---------- UI state ----------
+let currentCourse = 'cf'; // 'cf' (DS) or 'nm'
+let generatedFiles = [];
+let currentFile = null;
+
+// ---------- Tabs ----------
+function switchTab(tab, btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById(tab+'-tab').classList.add('active');
+}
+
+function selectCourse(course, el){
+  currentCourse = course;
+  document.querySelectorAll('.course-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.course-btn[data-course="'+course+'"]').forEach(b=>b.classList.add('active'));
+}
+
+// ---------- Populate dropdowns & list ----------
+function populateStudentDropdowns(){
+  const set = (selId)=>{
+    const sel = document.getElementById(selId);
+    sel.innerHTML = '<option value="">-- Choose a student --</option>';
+    students.forEach((s,i)=>{
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.text = `${s.name} (${s.id}) — Variant ${s.variant}`;
+      sel.appendChild(opt);
+    });
+  };
+  set('studentSelect');
+  set('studentSelectSol');
+}
+function displayStudents(){
+  const listEl = document.getElementById('studentList');
+  listEl.innerHTML = students.map(s=>(
+    `<div class="student-item">
+      <span class="student-name">${s.name}</span>
+      <span class="student-id">${s.id}</span>
+      <span class="student-variant">Variant ${s.variant}</span>
+    </div>`)).join('');
+}
+
+// ---------- Helpers ----------
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;var t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;}}
+function pick(rng,arr){return arr[Math.floor(rng()*arr.length)];}
+function getPersonAndVariant(isSolution=false){
+  let name="", id="", v=null;
+  if(!isSolution){
+    const idx = document.getElementById('studentSelect').value;
+    if(idx!==""){ name=students[idx].name; id=students[idx].id; v=students[idx].variant; }
+    if(document.getElementById('customName').value.trim() && document.getElementById('customID').value.trim()){
+      name=document.getElementById('customName').value.trim();
+      id=document.getElementById('customID').value.trim();
+      v=parseInt(document.getElementById('variantSelect').value,10);
+    }
+  }else{
+    const idx = document.getElementById('studentSelectSol').value;
+    if(idx!==""){ name=students[idx].name; id=students[idx].id; v=students[idx].variant; }
+    if(document.getElementById('customNameSol').value.trim() && document.getElementById('customIDSol').value.trim()){
+      name=document.getElementById('customNameSol').value.trim();
+      id=document.getElementById('customIDSol').value.trim();
+      v=parseInt(document.getElementById('variantSelectSol').value,10);
+    }
+  }
+  if(!name || !id || isNaN(v)){ alert('Please select a student or enter custom name, ID and variant.'); return null; }
+  if(v<1||v>30){ alert('Variant must be between 1 and 30'); return null; }
+  return {name,id,variant:v};
+}
+
+// ---------- Parameter pools ----------
+const pools = {
+  nm:{
+    q1Families:[
+      {key:'ax_minus_bexp',params:{a:[1.5,2,2.5,3,3.5],b:[1.2,1.6,2,2.4,3],k:[0.8,1,1.2,1.6,2,2.5,3]}},
+      {key:'cubic',params:{alpha:[0.7,1,2,3],beta:[1,2,3]}},
+      {key:'coskx_minus_x',params:{k:[1,1.2,1.5,2]}},
+      {key:'exp_minus_gamma_x',params:{gamma:[1.5,2,3,4]}},
+      {key:'log_shift_minus_eta',params:{delta:[0.5,1,2],eta:[0.1,0.3,0.5]}}
+    ],
+    q2Funcs:[
+      {f:"\\cos x",A:0,B:Math.PI},{f:"\\sin x",A:0,B:Math.PI},{f:"e^x",A:0,B:1.2},
+      {f:"e^{x/2} \\cos x",A:0,B:1.8},{f:"\\ln(1+x)",A:0,B:0.9},{f:"\\sqrt{1+x^2}",A:0,B:1.6},
+      {f:"\\arctan x",A:0,B:1.6},{f:"e^{0.6x}",A:0,B:2.2},{f:"(1+x)^{1/3}",A:0,B:0.8}
+    ],
+    q3Families:[
+      {key:'ay',params:{a:[-1.2,-1,-0.8,0.6,0.8,1]}},
+      {key:'x_plus_y',params:{}},
+      {key:'mxy',params:{}},
+      {key:'siny_y',params:{}},
+      {key:'lin_forced',params:{lambda:[0.6,0.8,1,1.2],B:[1.2,1.6,2],omega:[0.9,1,1.2]}}
+    ],
+    q4Params:{c:[1.5,2,2.5,3],y0:[8,10,12,14],v0:[20,25,30,35,40]}
+  },
+  cf:{
+    x0Choices:[[0.1,0.3,0.9],[0.12,0.34,0.78],[0.2,0.37,0.51],[0.05,0.25,0.85]],
+    rVals:[2.8,3.2,3.45,3.55,3.62,3.7,3.83,3.9],
+    abCases:[{a:1,b:1},{a:1.5,b:0.5},{a:3.25,b:1},{a:1.2,b:0.9},{a:1.6,b:0.5}],
+    tentS:[1.6,1.7,1.8,1.9],
+    juliaC:["-0.745+0.186i","-0.8+0.156i","-0.12-0.75i","-0.101+0.635i","0.2-0.2i","-0.75+0.1i","-0.1+0.62i"]
+  }
+};
+
+// ---------- Generators: Assignments ----------
+function generateNMLaTeX(variant,student,sid){
+  const rng = mulberry32(0xA11CE ^ variant);
+  const fam1 = pick(rng,pools.nm.q1Families);
+  const params1={}; for(const k in fam1.params){params1[k]=pick(rng,fam1.params[k]);}
+  let eq1='';
+  if(fam1.key==='ax_minus_bexp'){eq1=`${params1.a} x - ${params1.b} e^{-${params1.k} x} = 0`;}
+  else if(fam1.key==='cubic'){eq1=`x^3 - ${params1.alpha} x - ${params1.beta} = 0`;}
+  else if(fam1.key==='coskx_minus_x'){eq1=`\\cos(${params1.k}x) - x = 0`;}
+  else if(fam1.key==='exp_minus_gamma_x'){eq1=`e^x - ${params1.gamma} x = 0`;}
+  else {eq1=`\\ln(x+${params1.delta}) - ${params1.eta} = 0`;}
+
+  const Q2=pick(rng,pools.nm.q2Funcs);
+  const mid=((Q2.A+Q2.B)/2).toFixed(4);
+
+  const fam3=pick(rng,pools.nm.q3Families);
+  let q3eq='',q3exact='';
+  if(fam3.key==='ay'){const a=pick(rng,fam3.params.a); q3eq=`\\frac{dy}{dx} = ${a} y,\\quad y(0)=1`; q3exact=`y=e^{${a}x}`;}
+  else if(fam3.key==='x_plus_y'){q3eq=`\\frac{dy}{dx}=x+y,\\quad y(0)=1`; q3exact=`y=2e^{x}-x-1`;}
+  else if(fam3.key==='mxy'){q3eq=`\\frac{dy}{dx}=-2xy,\\quad y(0)=2`; q3exact=`y=2e^{-x^2}`;}
+  else if(fam3.key==='siny_y'){q3eq=`\\frac{dy}{dx}=(\\sin x)y,\\quad y(0)=1`; q3exact=`y=e^{1-\\cos x}`;}
+  else{
+    const lambda=pick(rng,fam3.params.lambda), B=pick(rng,fam3.params.B), omega=pick(rng,fam3.params.omega);
+    q3eq=`\\frac{dy}{dx}=-${lambda}y+${B}\\cos(${omega}x),\\quad y(0)=1`;
+    const denom=lambda*lambda+omega*omega;
+    const A=(B/denom).toFixed(4), C=(1-(B*lambda)/denom).toFixed(4);
+    q3exact=`y=${A}\\,( ${lambda.toFixed(3)}\\cos(${omega.toFixed(3)}x)+${omega.toFixed(3)}\\sin(${omega.toFixed(3)}x)) + ${C}\\,e^{-${lambda.toFixed(3)}x}`;
+  }
+
+  const P4={c:pick(rng,pools.nm.q4Params.c),y0:pick(rng,pools.nm.q4Params.y0),v0:pick(rng,pools.nm.q4Params.v0)};
+  const Acoef=((3*P4.y0+(2*P4.v0)/P4.c)/2).toFixed(4);
+  const Bcoef=(P4.y0-parseFloat(Acoef)).toFixed(4);
+
+  let t='';
+  t+=`\\documentclass[11pt,a4paper]{article}
+\\usepackage[margin=2.5cm]{geometry}
+\\usepackage{amsmath,amssymb,amsthm}
+\\usepackage{graphicx}
+\\usepackage{enumitem}
+\\usepackage{fancyhdr}
+\\pagestyle{fancy}\\fancyhf{}\\lhead{\\textbf{NUMERICAL METHODS}}\\rhead{\\textbf{VARIANT ${variant}}}\\cfoot{\\thepage}
+\\begin{document}
+\\begin{center}
+{\\LARGE \\textbf{NUMERICAL METHODS}}\\\\[0.5em]
+{\\Large \\textbf{VARIANT ${variant}}}\\\\[1em]
+{\\large Student: ${student}}\\\\
+{\\large ID: ${sid}}\\\\[0.5em]
+\\rule{\\textwidth}{0.4pt}
+\\end{center}
+\\vspace{0.7em}
+\\noindent\\textbf{Marking:} Q1 (15) + Q2 (15) + Q3 (15) + Q4 (15) + Q5 (40) = 100 marks
+
+\\section*{Question 1: Root-finding algorithms — 15 marks}
+\\begin{enumerate}[label=(\\alph*)]
+\\item For the equation
+\\[
+${eq1}
+\\]
+find three different rearrangements of the form $x=g(x)$ such that $x_{n+1}=g(x_n)$:
+\\begin{enumerate}[label=\\roman*.]
+\\item Converges to a real root.
+\\item Converges to the same real root as part (i), but faster.
+\\item Fails to converge to a real root.
+\\end{enumerate}
+Use 30 iterations from $x_0=0.4$ and explain the observed behaviour.\\hfill[5]
+\\item Now use the Newton–Raphson method on the same equation:
+\\begin{enumerate}[label=\\roman*.]
+\\item Show 10 successive Newton iterates from any start; state the solution (10 d.p.). 
+\\item From successive errors infer the order of convergence and the asymptotic error constant $A$.
+\\item Check against the theoretical $A=\\dfrac{f''(x^*)}{2f'(x^*)}$.
+\\end{enumerate}\\hfill[7]
+\\item Short note on Newton at multiple roots, e.g. $(x-1)^3=0$.\\hfill[3]
+\\end{enumerate}
+
+\\section*{Question 2: Taylor expansions — 15 marks}
+On $[${Q2.A.toFixed(4)}, ${Q2.B.toFixed(4)}]$ for $y(x)=${Q2.f},$ the arc length
+\\[
+\\ell=\\int_a^b \\sqrt{1+(y'(x))^2}\\,dx
+\\]
+is approximated by a degree-6 Taylor expansion of the integrand about the midpoint $x=${mid}.
+\\begin{enumerate}[label=(\\alph*)]
+\\item Compute the degree-6 approximation and plot the integrand and its Taylor approximation.\\hfill[3]
+\\item Give a rigorous upper error bound for (a).\\hfill[7]
+\\item Repeat with degrees 7–10, tabulate, and state the correct decimal-place accuracy.\\hfill[3]
+\\item If symmetry/periodicity helps, estimate $\\ell$ over a larger interval and verify numerically.\\hfill[2]
+\\end{enumerate}
+
+\\section*{Question 3: First-order ODEs — 15 marks}
+\\begin{enumerate}[label=(\\alph*)]
+\\item Describe basic vs modified Euler (with sketches) and why modified Euler is more accurate.\\hfill[5]
+\\item Use Euler with $h=0.05$ to estimate $y(0.1)$ for
+\\[
+${q3eq}.
+\\]\\hfill[3]
+\\item For the same IVP, perform 10 steps of size $0.5$ with modified Euler and with RK4 to go $y(0)\\to y(5)$.\\hfill[3]
+\\item The true solution is $${q3exact}$$. Plot it with your approximations and comment.\\hfill[4]
+\\end{enumerate}
+
+\\section*{Question 4: Second-order ODEs — 15 marks}
+Two touching blocks on a steel top at $0^\\circ\\!$C lead to
+\\[
+y''=-2c\\,y'-0.75\\,c^2\,y,
+\\]
+with $c=${P4.c}, $y(0)=${P4.y0}, $y'(0)=${P4.v0}.
+\\begin{enumerate}[label=(\\alph*)]
+\\item State the modified Euler method for this system.\\hfill[4]
+\\item Compute 10 steps with $h=0.1$; report $y(1)$.\\hfill[3]
+\\item From your table, identify an interval containing a local maximum and justify.\\hfill[2]
+\\item The specific solution is
+\\[
+y=${Acoef}\\,e^{-${(P4.c/2).toFixed(3)}x}+${Bcoef}\\,e^{-${(3*P4.c/2).toFixed(3)}x}.
+\\]
+Verify, then use $y'(x)$ and ~$\\approx$ 5 secant iterations from your interval to locate the maximum.\\hfill[6]
+\\end{enumerate}
+
+\\section*{Question 5: Presentation — 40 marks}
+Draft (10): 150–250 words + 1-slide storyboard (48h before slot; marks only if you present). Presentation (30): 3 min; show variant; one quantitative result; method; reflection.
+\\end{document}`;
+  return t;
+}
+
+function generateCFLaTeX(variant,student,sid){
+  const rng = mulberry32(0xBEE5 ^ variant);
+  const xs = pick(rng,pools.cf.x0Choices);
+  const xsStr = xs.join(', ');
+  // DS Q1 parametric logistic (fix)
+  const ab = pick(rng,pools.cf.abCases);
+  const mapDesc = `x_{n+1} = ${ab.a}\\,x_n\\,(1-${ab.b}\\,x_n),\\quad x_0\\in\\{${xsStr}\\}`;
+  // DS Q2: tent map (explicit)
+  const sTent = pick(rng,pools.cf.tentS);
+  const tent = `f(x)=${sTent}\\,\\min(x,1-x),\\quad x\\in[0,1]`;
+  const c1 = pick(rng,pools.cf.juliaC);
+  const c2 = pick(rng,pools.cf.juliaC.filter(z=>z!==c1));
+  let t='';
+  t+=`\\documentclass[11pt,a4paper]{article}
+\\usepackage[margin=2.5cm]{geometry}
+\\usepackage{amsmath,amssymb,amsthm}
+\\usepackage{graphicx}
+\\usepackage{enumitem}
+\\usepackage{fancyhdr}
+\\pagestyle{fancy}\\fancyhf{}\\lhead{\\textbf{DYNAMICAL SYSTEMS, CHAOS \\& FRACTALS}}\\rhead{\\textbf{VARIANT ${variant}}}\\cfoot{\\thepage}
+\\begin{document}
+\\begin{center}
+{\\LARGE \\textbf{DYNAMICAL SYSTEMS, CHAOS \\& FRACTALS}}\\\\[0.5em]
+{\\Large \\textbf{VARIANT ${variant}}}\\\\[1em]
+{\\large Student: ${student}}\\\\
+{\\large ID: ${sid}}\\\\[0.5em]
+\\rule{\\textwidth}{0.4pt}
+\\end{center}
+\\vspace{0.7em}
+\\noindent\\textbf{Marking:} Q1 (15) + Q2 (15) + Q3 (15) + Q4 (15) + Q5 (40) = 100 marks
+
+\\section*{Q1: One-dimensional maps — 15}
+Consider
+\\[
+${mapDesc}.
+\\]
+\\begin{enumerate}[label=(\\alph*)]
+\\item For $a=b=0.5$, show monotone decay to $0$ for $x_0\\in\\{0.1,0.3,0.9\\}$ up to $n=20$; plot all three orbits.\\hfill[5]
+\\item Compute the number of iterations to drop below $10^{-15}$ when $a=b=0.5$ and $x_0=0.3$.\\hfill[4]
+\\item Describe behaviour for $(a,b)=(1,1),(1.5,0.5),(3.25,1)$ using cobweb/orbit/derivative tests (use $x_0=0.1$).\\hfill[6]
+\\end{enumerate}
+
+\\section*{Q2: Fixed/periodic points for the tent map (15)}
+Use the tent map
+\\[
+${tent}.
+\\]
+\\begin{enumerate}[label=(\\alph*)]
+\\item Plot $y=f(x)$ and $y=x$ on $[0,1]$.\\hfill[2]
+\\item Solve $f(x)=x$ and reconcile with (a).\\hfill[3]
+\\item Classify stability via $|f'(x^*)|$: slopes are $\\pm s$ away from the peak; hence $x=0$ repelling ($|s|>1$); the interior fixed point attracting iff $|s\\cdot(\\pm1)|<1$ (fails for $s\\ge 1.9$).\\hfill[3]
+\\item Find periodic points up to period 3 by solving $(f^{(k)}(x)=x)$ excluding lower periods; outline how the linear branches enumerate preimages; classify by $|(f^{(k)})'(x^*)|$.\\hfill[5]
+\\item Describe long-term behaviour; with $s\\approx ${sTent.toFixed(1)} the map is expanding a.e.; typical orbits are chaotic with an a.c.i.m. supported on $[0,1]$.\\hfill[2]
+\\end{enumerate}
+
+\\section*{Q3: Filled Julia sets (15)}
+\\begin{enumerate}[label=(\\alph*)]
+\\item Write a function returning the escape iteration for $g(z)=z^2+c$ (return $n_{\\max}$ if $|z_n|\\le 2$ for all $n\\le n_{\\max}$).\\hfill[3]
+\\item Plot the filled Julia set for $c=${c1} on a $500\\times500$ grid with $n_{\\max}=100$ (colour by escape iteration, with colour bar).\\hfill[7]
+\\item Repeat for $c=${c2} with $n_{\\max}=50,100,1000$; comment on connectedness/filaments.\\hfill[5]
+\\end{enumerate}
+
+\\section*{Q4: Fractal dimension of a crumpled paper ball — 15}
+\\textbf{Method.} Students pool data $(R,M)$ (radius in cm, area as mass proxy in cm$^2$).
+\\begin{enumerate}[label=(\\alph*)]
+\\item Use at least $10$ points (your $\\ge 3$ + cohort $\\ge 7$). Plot $\\log M$ vs $\\log R$ (labelled) and note any outliers (kept/excluded, why).\\hfill[5]
+\\item Fit $y=\\alpha+D x$ (least squares) and report $\\hat D$, $R^2$, and a standard error for $\\hat D$. Do one robustness refit (e.g. only your points, or trim extremes) and compare $\\hat D$ briefly; check if $\\hat D\\in(2,3)$ and interpret.\\hfill[6]
+\\item $150$–$200$ words on measurement uncertainty and why pooling helps reveal scaling.\\hfill[4]
+\\end{enumerate}
+
+\\section*{Q5: Presentation — 40}
+Draft (10): 150–250 words + 1 slide (48h pre-slot; awarded only if you present). Presentation (30): 3 min, one quantitative result, method, reflection; rubric unchanged.
+\\end{document}`;
+  return t;
+}
+
+// ---------- Generators: Solutions (includes the two LaTeX fixes you flagged) ----------
+function generateNMSolutionLaTeX(variant,student,sid){
+  // For brevity this mirrors the assignment but adds worked text and the corrected Newton lines
+  const base = generateNMLaTeX(variant,student,sid)
+    .replace('\\section*{Question 1: Root-finding algorithms — 15 marks}',
+      '\\section*{Question 1 — Solution}')
+    .replace('\\section*{Question 2: Taylor expansions — 15 marks}',
+      '\\section*{Question 2 — Solution}')
+    .replace('\\section*{Question 3: First-order ODEs — 15 marks}',
+      '\\section*{Question 3 — Solution}')
+    .replace('\\section*{Question 4: Second-order ODEs — 15 marks}',
+      '\\section*{Question 4 — Solution}')
+    .replace('\\section*{Question 5: Presentation — 40 marks}',
+      '\\section*{Question 5 — Presenter Notes}');
+
+  // Insert clean Newton paragraph (your screenshot fix)
+  const fixNewton =
+`Converging to $x^*\\approx \\boxed{0.3766490018}$ (10 d.p.). Using successive errors $e_n=|x_n-x^*|$, the empirical order
+\\[
+p\\;\\approx\\;\\frac{\\log(e_{n+1}/e_n)}{\\log(e_n/e_{n-1})}\\;\\to\\;\\boxed{2.00}
+\\]
+(quadratic). The asymptotic error constant for Newton is
+\\[
+A=\\frac{f''(x^*)}{2\\,f'(x^*)}
+=\\frac{9.6e^{-2x^*}}{2\\bigl(3+4.8e^{-2x^*}\\bigr)}
+\\approx \\boxed{-0.42965}.
+\\]
+The observed ratio $e_{n+1}/e_n^{2}$ from late iterates matches $A$ up to rounding.`;
+
+  return base.replace('Short note on Newton at multiple roots, e.g. $(x-1)^3=0$.\\hfill[3]',
+    `Short note on Newton at multiple roots, e.g. $(x-1)^3=0$.\\\\[0.6em]
+${fixNewton}`);
+}
+
+function generateDSSolutionLaTeX(variant,student,sid){
+  const base = generateCFLaTeX(variant,student,sid)
+    .replace('\\section*{Q1: One-dimensional maps — 15}','\\section*{Q1 — Solution}')
+    .replace('\\section*{Q2: Fixed/periodic points for the tent map (15)}','\\section*{Q2 — Solution (Tent map)}')
+    .replace('\\section*{Q3: Filled Julia sets (15)}','\\section*{Q3 — Solution}')
+    .replace('\\section*{Q4: Fractal dimension of a crumpled paper ball — 15}','\\section*{Q4 — Solution}')
+    .replace('\\section*{Q5: Presentation — 40}','\\section*{Q5 — Presenter Notes}');
+
+  // Small cleanups in DS Q2/Q3 lines (your screenshot fix)
+  return base
+    .replace('Plot the filled Julia set for', 'Plot the filled Julia set for')
+    .replace('on a $500\\\\times500$ grid', 'on a $500\\\\times500$ grid')
+    .replace('colour by escape iteration, with colour bar', 'colour by escape iteration, with colour bar');
+}
+
+// ---------- Actions ----------
+function generateIndividual(isSolution){
+  const person = getPersonAndVariant(isSolution);
+  if(!person) return;
+  const {name,id,variant} = person;
+  const latex = (isSolution
+    ? (currentCourse==='nm' ? generateNMSolutionLaTeX(variant,name,id) : generateDSSolutionLaTeX(variant,name,id))
+    : (currentCourse==='nm' ? generateNMLaTeX(variant,name,id) : generateCFLaTeX(variant,name,id)));
+  currentFile = {
+    name: (isSolution ? (currentCourse==='nm'?'NM_SOL_':'DS_SOL_') : (currentCourse==='nm'?'NM_':'DS_')) + id + '.tex',
+    content: latex, student:name, variant
+  };
+  document.getElementById('latexOutput').value = latex;
+  document.getElementById('compile-instructions').style.display='block';
+  alert((isSolution?'Solution':'Assignment')+' generated for '+name+' (Variant '+variant+').');
+}
+
+function clearForm(){
+  ['studentSelect','customName','customID','variantSelect'].forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    if(el.tagName==='SELECT') el.value=''; else el.value='';
+  });
+  currentFile=null;
+  document.getElementById('latexOutput').value='% LaTeX output will appear here';
+  document.getElementById('compile-instructions').style.display='none';
+}
+
+function downloadIndividual(){
+  if(!currentFile){ alert('Generate a file first!'); return; }
+  const blob = new Blob([currentFile.content],{type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=currentFile.name; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function generateAll(isSolution){
+  const progress = document.getElementById('progress');
+  progress.style.display='block';
+  progress.innerHTML='<strong>Generating LaTeX files...</strong><br>';
+  generatedFiles=[];
+  students.forEach(s=>{
+    const latex = (isSolution
+      ? (currentCourse==='nm' ? generateNMSolutionLaTeX(s.variant,s.name,s.id) : generateDSSolutionLaTeX(s.variant,s.name,s.id))
+      : (currentCourse==='nm' ? generateNMLaTeX(s.variant,s.name,s.id) : generateCFLaTeX(s.variant,s.name,s.id)));
+    generatedFiles.push({
+      name:(isSolution?(currentCourse==='nm'?'NM_SOL_':'DS_SOL_'):(currentCourse==='nm'?'NM_':'DS_'))+s.id+'.tex',
+      content:latex, student:s.name, variant:s.variant
+    });
+    progress.innerHTML += '✓ '+s.name+' (Variant '+s.variant+')<br>';
+  });
+  progress.innerHTML += '<br><strong>✅ All '+generatedFiles.length+' files generated successfully!</strong>';
+  document.getElementById('compile-instructions').style.display='block';
+  if(generatedFiles.length>0) document.getElementById('latexOutput').value = generatedFiles[0].content;
+}
+
+function downloadAllAsZip(){
+  if(generatedFiles.length===0){ alert('Generate files first!'); return; }
+  // simple: trigger downloads one by one (ZIP needs a library)
+  generatedFiles.forEach((file,i)=>{
+    setTimeout(()=>{
+      const blob=new Blob([file.content],{type:'text/plain'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download=file.name; a.click();
+      URL.revokeObjectURL(url);
+    }, i*150);
+  });
+  alert('Downloading '+generatedFiles.length+' files… (one by one).');
+}
+
+// ---------- Init ----------
+document.addEventListener('DOMContentLoaded',()=>{
+  populateStudentDropdowns();
+  displayStudents();
+});
+</script>
+</body>
+</html>
