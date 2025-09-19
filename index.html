@@ -501,15 +501,15 @@ function generateCFLaTeX(variant, student, sid) {
   latex += '\\end{itemize}\\n\\n';
 
   latex += '\\begin{enumerate}[label=(\\alph*)]\\n';
-  latex += '\\item \\textbf{Data \\& log–log plot — 5 marks}\\n';
+  latex += '\\item \\textbf{Data \\& log–log plot —}\\n';
   latex += 'Assemble a dataset with at least \\textbf{10} points (\\(\\ge\\!3\\) your own plus cohort points). Convert units to $R$ in cm and $M$ in cm$^2$. Define $x=\\log R$, $y=\\log M$, make a clearly labelled log–log scatter, and briefly note any obvious outliers (and whether you excluded them).\\hfill [5]\\n\\n';
 
-  latex += '\\item \\textbf{Estimating $D$ (minimal statistics) — 7 marks}\\n';
+  latex += '\\item \\textbf{Estimating $D$ (minimal statistics) — }\\n';
   latex += 'Fit the straight line $y=\\alpha+Dx$ by least squares. Report (i) the slope $\\hat D$ and (ii) the coefficient of determination $R^2$. Also report a \\textbf{standard error} for $\\hat D$ using\\\\[2pt]';
   latex += '\\[ s_{\\hat D}=\\sqrt{\\,\\hat\\sigma^2/S_{xx}\\,},\\quad S_{xx}=\\sum (x_i-\\bar x)^2,\\; \\hat\\sigma^2=\\frac{1}{n-2}\\sum (y_i-\\hat\\alpha-\\hat D x_i)^2. \\]';
   latex += 'Do a light robustness check: repeat the fit after removing the smallest and largest $R$ (or only your own points) and comment on any change in $\\hat D$. State whether $\\hat D\\in(2,3)$ and what that implies physically.\\hfill [7]\\n\\n';
 
-  latex += '\\item \\textbf{Interpretation — 3 marks}\\n';
+  latex += '\\item \\textbf{Interpretation — }\\n';
   latex += 'In 120–180 words, interpret your estimate: measurement uncertainty (diameter averaging, non-sphericity), paper/size effects, and how pooling improves the scaling signal. Keep the focus on space-filling.\\hfill [3]\\n';
   latex += '\\end{enumerate}\\n\\n';
 
